@@ -11,7 +11,7 @@ function polimeroView() {
     <h4>Tabela de dosagens calculadas automaticamente</h4>
     <table id="pol_tabela" border="1"><tr><th>Dosagem</th><th>Volume</th></tr></table>
 
-    <button onclick="mostrarJSON('pol_resultado')">Ver detalhes técnicos (JSON)</button>
+    <button onclick="mostrarJSON('pol_resultado')">Verificar dados técnicos</button>
     <pre id="pol_resultado" style="display:none"></pre>
   `;
 }

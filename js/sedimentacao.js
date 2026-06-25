@@ -12,7 +12,7 @@ function sedimentacaoView() {
     <h4>Tabela de parâmetros calculados automaticamente</h4>
     <table id="sed_tabela" border="1"><tr><th>Parâmetro</th><th>Valor</th></tr></table>
 
-    <button onclick="mostrarJSON('sed_resultado')">Ver detalhes técnicos (JSON)</button>
+    <button onclick="mostrarJSON('sed_resultado')">Verificar dados técnicos</button>
     <pre id="sed_resultado" style="display:none"></pre>
   `;
 }
@@ -31,5 +31,5 @@ function calcularSedimentacao() {
   tabela.innerHTML = "<tr><th>Parâmetro</th><th>Valor</th></tr>";
   tabela.innerHTML += `<tr><td>Área</td><td>${area}</td></tr>`;
   tabela.innerHTML += `<tr><td>Volume</td><td>${volume}</td></tr>`;
-  document.getElementById("sed_resultado").innerText = JSON.stringify(resultado, null, 2);
+  document.get
 }
