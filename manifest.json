@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "name": "ETA Profissional",
   "short_name": "ETA",
@@ -13,3 +14,20 @@
     }
   ]
 }
+=======
+{
+  "name": "ETA Profissional",
+  "short_name": "ETA",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2C5282",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ]
+}
+>>>>>>> 9afd361cac5d0e42470c2d0c69ccfb13ceabd727
