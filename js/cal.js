@@ -1,32 +1,36 @@
 function calView() {
-  let html = `
-    <h2>🧂 Cálculo de Cal</h2>
-    <input id="cal_conc" placeholder="Concentração solução (g/L)">
-    <input id="cal_voljarro" placeholder="Volume jarro (L)">
-    <input id="cal_ini" placeholder="Dosagem inicial (mg/L)">
-    <input id="cal_fim" placeholder="Dosagem final (mg/L)">
-    <input id="cal_inc" placeholder="Incremento (mg/L)">
-    <button onclick="calcularCal()">📊 Calcular</button>
-    <pre id="cal_resultado"></pre>
+  return `
+    <h2>🧂 Cal Hidratada</h2>
+    <label>Concentração da Solução (g/L)</label>
+    <input id="cal_conc" value="50">
+    <label>Volume do Jarro (L)</label>
+    <input id="cal_vol" value="2">
+    <label>Dosagem Inicial (mg/L)</label>
+    <input id="cal_ini" value="10">
+    <label>Dosagem Final (mg/L)</label>
+    <input id="cal_fim" value="100">
+    <label>Incremento (mg/L)</label>
+    <input id="cal_inc" value="10">
+    <button onclick="calcularCal()">Calcular</button>
+    <table id="cal_tabela" border="1">
+      <tr><th>Dosagem (mg/L)</th><th>Volume (mL)</th></tr>
+    </table>
   `;
-  return html;
 }
 
 function calcularCal() {
-  let conc = parseFloat(document.getElementById("cal_conc").value) || 0;
-  let vol = parseFloat(document.getElementById("cal_voljarro").value) || 0;
-  let ini = parseFloat(document.getElementById("cal_ini").value) || 0;
-  let fim = parseFloat(document.getElementById("cal_fim").value) || 0;
-  let inc = parseFloat(document.getElementById("cal_inc").value) || 0;
+  let conc = parseFloat(document.getElementById("cal_conc").value);
+  let vol = parseFloat(document.getElementById("cal_vol").value);
+  let ini = parseFloat(document.getElementById("cal_ini").value);
+  let fim = parseFloat(document.getElementById("cal_fim").value);
+  let inc = parseFloat(document.getElementById("cal_inc").value);
 
-  let tabela = [];
+  let tabela = document.getElementById("cal_tabela");
+  tabela.innerHTML = "<tr><th>Dosagem (mg/L)</th><th>Volume (mL)</th></tr>";
+
   for (let dosagem = ini; dosagem <= fim; dosagem += inc) {
     let ml = (dosagem * vol) / conc;
-    tabela.push({ dosagem: dosagem.toFixed(2), ml: ml.toFixed(2) });
+    let row = `<tr><td>${dosagem.toFixed(2)}</td><td>${ml.toFixed(2)}</td></tr>`;
+    tabela.innerHTML += row;
   }
-
-  let conc_mgl = conc * 1000;
-  let resultado = { concentracao: conc_mgl, tabela };
-
-  document.getElementById("cal_resultado").innerText = JSON.stringify(resultado, null, 2);
 }

@@ -15,10 +15,11 @@
 <body>
   <h1>ETA Profissional - PWA</h1>
 
+  <!-- Menu principal (equivalente ao Dashboard) -->
   <nav>
     <button onclick="abrir('balanco')">⚖ Balanço de Massa</button>
-    <button onclick="abrir('pac')">🧪 PAC</button>
-    <button onclick="abrir('cal')">🧂 Cal</button>
+    <button onclick="abrir('pac')">🧪 PAC Férrico</button>
+    <button onclick="abrir('cal')">🧂 Cal Hidratada</button>
     <button onclick="abrir('polimero')">🧬 Polímero</button>
     <button onclick="abrir('sedimentacao')">💧 Sedimentação</button>
     <button onclick="abrir('jar')">🧫 Jar Test</button>
@@ -26,6 +27,7 @@
     <button onclick="exportarExcel()">📊 Exportar Excel</button>
   </nav>
 
+  <!-- Área dinâmica de conteúdo -->
   <div id="conteudo"></div>
 
   <!-- Scripts dos módulos -->
@@ -39,10 +41,12 @@
   <script src="js/storage.js"></script>
 
   <script>
+    // Função para abrir cada módulo
     function abrir(modulo) {
       document.getElementById("conteudo").innerHTML = window[modulo+"View"]();
     }
 
+    // Registrar Service Worker para funcionamento offline
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("service-worker.js")
         .then(() => console.log("Service Worker registrado!"));
