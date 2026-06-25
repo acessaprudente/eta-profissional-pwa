@@ -1,21 +1,19 @@
-# eta-profissional-pwa
-principais calculos ETA
-
 eta-profissional-pwa/
 │
-├── index.html              # Tela principal com navegação
-├── manifest.json           # Configuração do PWA
+├── index.html              # Dashboard principal (equivalente ao main.py)
+├── manifest.json           # Configuração PWA
 ├── service-worker.js       # Cache offline
-├── icon-192.png
-├── icon-512.png
+├── icon.png                # Ícone único
+│
 ├── css/
-│   └── style.css           # Estilo visual
-├── js/
-│   ├── balanco.js          # Cálculo de turbidez e vazão total
-│   ├── pac.js              # Cálculo de PAC
-│   ├── cal.js              # Cálculo de Cal
-│   ├── polimero.js         # Cálculo de Polímero
-│   ├── sedimentacao.js     # Cálculo de Sedimentação
-│   ├── export.js           # Exportação para PDF/Excel
-│   └── storage.js          # LocalStorage para salvar dados
-
+│   └── style.css           # Estilos visuais
+│
+└── js/
+    ├── balanco.js          # Balanço de Massa
+    ├── pac.js              # PAC Férrico (fiel ao calculo_pac.py)
+    ├── cal.js              # Cal Hidratada (fiel ao cal.py)
+    ├── polimero.js         # Polímero (fiel ao poli.py)
+    ├── sedimentacao.js     # Sedimentação (fiel ao sedimentacao.py)
+    ├── jar.js              # Jar Test com abas (PAC, Cal, Polímero, Comparativo)
+    ├── export.js           # Exportação PDF/Excel
+    └── storage.js          # Salvamento local (localStorage)

@@ -1,27 +1,43 @@
 function sedimentacaoView() {
   let html = `
     <h2>💧 Cálculo de Sedimentação</h2>
-    <input id="sed_vazao" placeholder="Vazão (m³/h)">
-    <input id="sed_area" placeholder="Área do Decantador (m²)">
+    <input id="sed_largura" placeholder="Largura (m)">
+    <input id="sed_comprimento" placeholder="Comprimento (m)">
+    <input id="sed_n" placeholder="Nº Decantadores">
+    <input id="sed_qeta" placeholder="Vazão ETA (m³/h)">
+    <input id="sed_profundidade" placeholder="Profundidade (m)">
     <button onclick="calcularSedimentacao()">📊 Calcular</button>
-    <p id="sed_resultado"></p>
+    <pre id="sed_resultado"></pre>
   `;
-  setTimeout(() => carregarDadosModulo("sedimentacao", ["sed_vazao","sed_area"]), 100);
   return html;
 }
 
 function calcularSedimentacao() {
-  let vazao = parseFloat(document.getElementById("sed_vazao").value) || 0;
-  let area = parseFloat(document.getElementById("sed_area").value) || 0;
+  let largura = parseFloat(document.getElementById("sed_largura").value) || 0;
+  let comprimento = parseFloat(document.getElementById("sed_comprimento").value) || 0;
+  let n = parseFloat(document.getElementById("sed_n").value) || 0;
+  let qeta = parseFloat(document.getElementById("sed_qeta").value) || 0;
+  let profundidade = parseFloat(document.getElementById("sed_profundidade").value) || 0;
 
-  if (area > 0) {
-    let velocidade = vazao / area;
-    document.getElementById("sed_resultado").innerText =
-      `Velocidade de Sedimentação = ${velocidade.toFixed(2)} m/h`;
-  } else {
-    document.getElementById("sed_resultado").innerText =
-      "Informe uma área válida.";
-  }
+  let area = largura * comprimento * n;
+  let qdia = qeta * 24;
+  let taxa = qdia / area;
 
-  salvarDadosModulo("sedimentacao", ["sed_vazao","sed_area"]);
+  let volume = largura * comprimento * profundidade * n;
+  let tdh = volume / qeta;
+
+  let altura_cm = profundidade * 100;
+  let tempo_min = tdh * 60;
+  let vel = altura_cm / tempo_min;
+
+  let resultado = {
+    area_m2: area.toFixed(2),
+    taxa_m3_m2_dia: taxa.toFixed(2),
+    volume_m3: volume.toFixed(2),
+    tdh_h: tdh.toFixed(2),
+    vel_cm_min: vel.toFixed(3),
+    tempo_min: tempo_min.toFixed(2)
+  };
+
+  document.getElementById("sed_resultado").innerText = JSON.stringify(resultado, null, 2);
 }

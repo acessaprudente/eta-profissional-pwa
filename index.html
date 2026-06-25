@@ -1,18 +1,14 @@
-
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
   <title>ETA Profissional - PWA</title>
-  <!-- Manifesto do PWA -->
   <link rel="manifest" href="manifest.json">
-  <!-- Ícone único -->
   <link rel="icon" href="icon.png">
   <link rel="apple-touch-icon" href="icon.png">
-  <!-- Estilos -->
   <link rel="stylesheet" href="css/style.css">
 
-  <!-- Bibliotecas necessárias -->
+  <!-- Bibliotecas para exportação -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
@@ -25,6 +21,7 @@
     <button onclick="abrir('cal')">🧂 Cal</button>
     <button onclick="abrir('polimero')">🧬 Polímero</button>
     <button onclick="abrir('sedimentacao')">💧 Sedimentação</button>
+    <button onclick="abrir('jar')">🧫 Jar Test</button>
     <button onclick="exportarPDF()">📄 Exportar PDF</button>
     <button onclick="exportarExcel()">📊 Exportar Excel</button>
   </nav>
@@ -37,6 +34,7 @@
   <script src="js/cal.js"></script>
   <script src="js/polimero.js"></script>
   <script src="js/sedimentacao.js"></script>
+  <script src="js/jar.js"></script>
   <script src="js/export.js"></script>
   <script src="js/storage.js"></script>
 
@@ -45,7 +43,6 @@
       document.getElementById("conteudo").innerHTML = window[modulo+"View"]();
     }
 
-    // Registro do Service Worker
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("service-worker.js")
         .then(() => console.log("Service Worker registrado!"));

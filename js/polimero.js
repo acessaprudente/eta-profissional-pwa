@@ -1,22 +1,30 @@
 function polimeroView() {
   let html = `
     <h2>🧬 Cálculo de Polímero</h2>
-    <input id="pol_dose" placeholder="Dose Polímero (mg/L)">
-    <input id="pol_vazao" placeholder="Vazão (m³/h)">
+    <input id="pol_conc" placeholder="Concentração solução (mg/L)">
+    <input id="pol_voljarro" placeholder="Volume jarro (L)">
+    <input id="pol_ini" placeholder="Dosagem inicial (mg/L)">
+    <input id="pol_fim" placeholder="Dosagem final (mg/L)">
+    <input id="pol_inc" placeholder="Incremento (mg/L)">
     <button onclick="calcularPolimero()">📊 Calcular</button>
-    <p id="pol_resultado"></p>
+    <pre id="pol_resultado"></pre>
   `;
-  setTimeout(() => carregarDadosModulo("polimero", ["pol_dose","pol_vazao"]), 100);
   return html;
 }
 
 function calcularPolimero() {
-  let dose = parseFloat(document.getElementById("pol_dose").value) || 0;
-  let vazao = parseFloat(document.getElementById("pol_vazao").value) || 0;
+  let conc = parseFloat(document.getElementById("pol_conc").value) || 0;
+  let vol = parseFloat(document.getElementById("pol_voljarro").value) || 0;
+  let ini = parseFloat(document.getElementById("pol_ini").value) || 0;
+  let fim = parseFloat(document.getElementById("pol_fim").value) || 0;
+  let inc = parseFloat(document.getElementById("pol_inc").value) || 0;
 
-  let massa = dose * vazao;
-  document.getElementById("pol_resultado").innerText =
-    `Consumo de Polímero = ${massa.toFixed(2)} g/h`;
+  let tabela = [];
+  for (let dosagem = ini; dosagem <= fim; dosagem += inc) {
+    let ml = (dosagem * vol * 1000) / conc;
+    tabela.push({ dosagem: dosagem.toFixed(3), ml: ml.toFixed(2) });
+  }
 
-  salvarDadosModulo("polimero", ["pol_dose","pol_vazao"]);
+  let resultado = { concentracao: conc, tabela };
+  document.getElementById("pol_resultado").innerText = JSON.stringify(resultado, null, 2);
 }
