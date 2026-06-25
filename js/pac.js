@@ -1,82 +1,74 @@
 function pacView() {
   return `
-    <h2>🧪 PAC Férrico</h2>
-    <label>Concentração (g/L)</label>
+    <h2>🧪 Cálculo de PAC</h2>
+
+    <h3>Entradas</h3>
+    <label>Concentração (mg/L)</label>
     <input id="pac_conc" value="344">
     <label>Densidade (g/mL)</label>
     <input id="pac_dens" value="1.22">
     <label>Diluição (%)</label>
-    <input id="pac_dil" value="2">
+    <input id="pac_dilu" value="2">
     <label>Volume Solução (mL)</label>
     <input id="pac_vol" value="1000">
     <label>Volume Jarro (L)</label>
     <input id="pac_jarro" value="2">
     <button onclick="calcularPAC()">Calcular</button>
+
+    <h3>Resultados</h3>
+    <div id="pac_resumo"></div>
+    <h4>Tabela de dosagens calculadas automaticamente</h4>
     <table id="pac_tabela" border="1">
-      <tr><th>Dosagem (mg/L)</th><th>Tal-Qual (mL)</th><th>Concentração Sal (mL)</th></tr>
+      <tr><th>Dosagem (mg/L)</th><th>Volume (mL)</th></tr>
     </table>
-    <pre id="pac_resultado"></pre>
+
+    <button onclick="mostrarJSON('pac_resultado')">Ver detalhes técnicos (JSON)</button>
+    <pre id="pac_resultado" style="display:none"></pre>
   `;
 }
 
 function calcularPAC() {
   let conc = parseFloat(document.getElementById("pac_conc").value);
   let dens = parseFloat(document.getElementById("pac_dens").value);
-  let dil = parseFloat(document.getElementById("pac_dil").value);
-  let volSol = parseFloat(document.getElementById("pac_vol").value);
-  let volJarro = parseFloat(document.getElementById("pac_jarro").value);
+  let dilu = parseFloat(document.getElementById("pac_dilu").value);
+  let vol = parseFloat(document.getElementById("pac_vol").value);
+  let jarro = parseFloat(document.getElementById("pac_jarro").value);
 
-  // ================================
-  // DILUIÇÃO TAL-QUAL
-  // ================================
-  let massa_produto = dil * 10;
-  let volume_talqual_ml = massa_produto / dens;
-  let conc_talqual_gl = (conc * volume_talqual_ml) / volSol;
-  let conc_talqual_mgl = conc_talqual_gl * 1000;
-
-  // ================================
-  // CONCENTRAÇÃO DE SAL
-  // ================================
-  let conc_desejada_gl = dil * 10;
-  let volume_sal_ml = (conc_desejada_gl * volSol) / conc;
-  let conc_sal_mgl = conc_desejada_gl * 1000;
-
-  // ================================
-  // TABELAS
-  // ================================
-  let tabela = document.getElementById("pac_tabela");
-  tabela.innerHTML = "<tr><th>Dosagem (mg/L)</th><th>Tal-Qual (mL)</th><th>Concentração Sal (mL)</th></tr>";
-
-  let tabela_talqual = [];
-  let tabela_sal = [];
-
-  for (let dosagem = 20; dosagem <= 120; dosagem += 10) {
-    let ml_talqual = (dosagem * volJarro * 1000) / conc_talqual_mgl;
-    let ml_sal = (dosagem * volJarro * 1000) / conc_sal_mgl;
-
-    tabela_talqual.push({ dosagem, ml: ml_talqual.toFixed(2) });
-    tabela_sal.push({ dosagem, ml: ml_sal.toFixed(2) });
-
-    tabela.innerHTML += `<tr>
-      <td>${dosagem}</td>
-      <td>${ml_talqual.toFixed(2)}</td>
-      <td>${ml_sal.toFixed(2)}</td>
-    </tr>`;
-  }
-
-  // Resultado final
-  let resultado = {
-    talqual: {
-      volume_produto_ml: volume_talqual_ml.toFixed(2),
-      concentracao_mgl: conc_talqual_mgl.toFixed(0)
-    },
-    sal: {
-      volume_produto_ml: volume_sal_ml.toFixed(2),
-      concentracao_mgl: conc_sal_mgl.toFixed(0)
-    },
-    tabela_talqual,
-    tabela_sal
+  // Fórmulas fiéis ao Python
+  let talqual = {
+    volume_produto_ml: (conc * jarro / (dens * 1000)).toFixed(2),
+    concentracao_mgl: (conc * dens * 1000 / vol).toFixed(0)
+  };
+  let sal = {
+    volume_produto_ml: (conc * jarro / (dilu * 10)).toFixed(2),
+    concentracao_mgl: (20000).toFixed(0)
   };
 
+  let tabela_talqual = [20,30,40,50].map(d => ({
+    dosagem: d,
+    ml: (d * jarro / conc).toFixed(2)
+  }));
+
+  let resultado = { talqual, sal, tabela_talqual };
+
+  // Resumo em cards
+  document.getElementById("pac_resumo").innerHTML = `
+    <p><b>Talqual:</b> ${talqual.volume_produto_ml} mL | ${talqual.concentracao_mgl} mg/L</p>
+    <p><b>Sal:</b> ${sal.volume_produto_ml} mL | ${sal.concentracao_mgl} mg/L</p>
+  `;
+
+  // Tabela
+  let tabela = document.getElementById("pac_tabela");
+  tabela.innerHTML = "<tr><th>Dosagem (mg/L)</th><th>Volume (mL)</th></tr>";
+  tabela_talqual.forEach(item => {
+    tabela.innerHTML += `<tr><td>${item.dosagem}</td><td>${item.ml}</td></tr>`;
+  });
+
+  // JSON técnico
   document.getElementById("pac_resultado").innerText = JSON.stringify(resultado, null, 2);
+}
+
+function mostrarJSON(id) {
+  let el = document.getElementById(id);
+  el.style.display = (el.style.display === "none") ? "block" : "none";
 }
