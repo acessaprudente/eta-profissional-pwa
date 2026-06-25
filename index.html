@@ -2,21 +2,18 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>ETA Profissional - PWA</title>
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icon.png">
   <link rel="apple-touch-icon" href="icon.png">
   <link rel="stylesheet" href="css/style.css">
-
-  <!-- Bibliotecas para exportação -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
-  <h1>ETA Profissional - PWA</h1>
-
-  <!-- Menu principal (equivalente ao Dashboard) -->
-  <nav>
+  <header><h1>ETA Profissional - PWA</h1></header>
+  <nav class="menu">
     <button onclick="abrir('balanco')">⚖ Balanço de Massa</button>
     <button onclick="abrir('pac')">🧪 PAC Férrico</button>
     <button onclick="abrir('cal')">🧂 Cal Hidratada</button>
@@ -26,11 +23,9 @@
     <button onclick="exportarPDF()">📄 Exportar PDF</button>
     <button onclick="exportarExcel()">📊 Exportar Excel</button>
   </nav>
+  <main id="conteudo" class="conteudo"></main>
 
-  <!-- Área dinâmica de conteúdo -->
-  <div id="conteudo"></div>
-
-  <!-- Scripts dos módulos -->
+  <script src="js/util.js"></script>
   <script src="js/balanco.js"></script>
   <script src="js/pac.js"></script>
   <script src="js/cal.js"></script>
@@ -41,16 +36,18 @@
   <script src="js/storage.js"></script>
 
   <script>
-    // Função para abrir cada módulo
     function abrir(modulo) {
-      document.getElementById("conteudo").innerHTML = window[modulo+"View"]();
+      const fn = window[modulo + 'View'];
+      if (typeof fn === 'function') {
+        document.getElementById('conteudo').innerHTML = fn();
+      } else {
+        document.getElementById('conteudo').innerHTML = '<p>Módulo não encontrado: ' + modulo + '</p>';
+      }
     }
-
-    // Registrar Service Worker para funcionamento offline
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("service-worker.js")
-        .then(() => console.log("Service Worker registrado!"));
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js').then(()=>console.log('Service Worker registrado'));
     }
+    abrir('jar');
   </script>
 </body>
 </html>

@@ -1,46 +1,31 @@
-function pacView() {
+function balancoView() {
   return `
-    <h2>🧪 Cálculo de PAC</h2>
-
-    <h3>Entradas</h3>
-    <label>Concentração (mg/L)</label><input id="pac_conc" value="344">
-    <label>Densidade (g/mL)</label><input id="pac_dens" value="1.22">
-    <label>Diluição (%)</label><input id="pac_dilu" value="2">
-    <label>Volume Solução (mL)</label><input id="pac_vol" value="1000">
-    <label>Volume Jarro (L)</label><input id="pac_jarro" value="2">
-    <button onclick="calcularPAC()">Calcular</button>
-
-    <h3>Resultados</h3>
-    <div id="pac_resumo"></div>
-    <h4>Tabela de dosagens calculadas automaticamente</h4>
-    <table id="pac_tabela" border="1"><tr><th>Dosagem (mg/L)</th><th>Volume (mL)</th></tr></table>
-
-    <button onclick="mostrarJSON('pac_resultado')">Verificar dados técnicos</button>
-    <pre id="pac_resultado" style="display:none"></pre>
-  `;
+    <h2>⚖️ Balanço de Massa</h2>
+    <section class="inputs">
+      <label>Vazão (m³/h)</label><input id="bal_q" value="100" type="number" step="any">
+      <label>Concentração (mg/L)</label><input id="bal_c" value="50" type="number" step="any">
+      <button onclick="calcularBalanco()">Calcular</button>
+    </section>
+    <section class="results">
+      <div id="bal_resumo"></div>
+      <h4>Tabela de fluxos</h4>
+      <table id="bal_tabela" border="1"><tr><th>Fluxo</th><th>Valor</th></tr></table>
+      <button onclick="mostrarJSON('bal_resultado')">Verificar dados técnicos</button>
+      <pre id="bal_resultado" style="display:none"></pre>
+    </section>`;
 }
-
-function calcularPAC() {
-  // ... cálculos fiéis ao Python ...
-
-  let resultado = { talqual, sal, tabela_talqual };
-
-  // Cards e tabela amigáveis
-  document.getElementById("pac_resumo").innerHTML = `
-    <p><b>Talqual:</b> ${talqual.volume_produto_ml} mL | ${talqual.concentracao_mgl} mg/L</p>
-    <p><b>Sal:</b> ${sal.volume_produto_ml} mL | ${sal.concentracao_mgl} mg/L</p>
-  `;
-  let tabela = document.getElementById("pac_tabela");
-  tabela.innerHTML = "<tr><th>Dosagem (mg/L)</th><th>Volume (mL)</th></tr>";
-  tabela_talqual.forEach(item => {
-    tabela.innerHTML += `<tr><td>${item.dosagem}</td><td>${item.ml}</td></tr>`;
-  });
-
-  // JSON escondido
-  document.getElementById("pac_resultado").innerText = JSON.stringify(resultado, null, 2);
-}
-
-function mostrarJSON(id) {
-  let el = document.getElementById(id);
-  el.style.display = (el.style.display === "none") ? "block" : "none";
+function calcularBalanco() {
+  const q = parseFloat(document.getElementById('bal_q').value) || 0;
+  const c = parseFloat(document.getElementById('bal_c').value) || 0;
+  const carga_mg_h = q * 1000 * c;
+  const carga_g_h = carga_mg_h / 1000;
+  const resultado = { vazao_m3h: q, concentracao_mgL: c, carga_mg_h: carga_mg_h, carga_g_h: carga_g_h };
+  document.getElementById('bal_resumo').innerHTML = `<p><b>Carga:</b> ${fmt(carga_mg_h,2)} mg/h (${fmt(carga_g_h,3)} g/h)</p>`;
+  const tabela = document.getElementById('bal_tabela');
+  tabela.innerHTML = '<tr><th>Fluxo</th><th>Valor</th></tr>' +
+    `<tr><td>Vazão (m³/h)</td><td>${q}</td></tr>` +
+    `<tr><td>Concentração (mg/L)</td><td>${c}</td></tr>` +
+    `<tr><td>Carga (mg/h)</td><td>${fmt(carga_mg_h,2)}</td></tr>` +
+    `<tr><td>Carga (g/h)</td><td>${fmt(carga_g_h,3)}</td></tr>`;
+  document.getElementById('bal_resultado').innerText = JSON.stringify(resultado, null, 2);
 }
