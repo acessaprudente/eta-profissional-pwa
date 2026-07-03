@@ -1,9 +1,22 @@
 {
-  "name": "ETA Profissional",
-  "short_name": "ETA",
-  "start_url": ".",
+  "name": "ETA Professional",
+  "short_name": "ETA Pro",
+  "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#2b7cff",
-  "icons": [{ "src": "icon.png", "sizes": "192x192", "type": "image/png" }]
+  "background_color": "#1565C0",
+  "theme_color": "#1565C0",
+  "orientation": "portrait-primary",
+  "description": "Sistema profissional para ETA - cálculos de PAC, CAL, polímero e processos físicos-químicos",
+  "icons": [
+    {
+      "src": "assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
 }

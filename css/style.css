@@ -1,11 +1,263 @@
-body { font-family: Arial, sans-serif; margin: 12px; color:#222 }
-header h1 { margin:0 0 12px 0 }
-.menu { margin-bottom:12px }
-.menu button { margin-right:6px }
-.inputs { background:#f7f9fc; padding:10px; border-radius:6px; margin-bottom:8px }
-.results { background:#fff; padding:10px; border-radius:6px }
-label { display:block; margin-top:6px }
-input { width:140px; margin-right:8px }
-table { width:100%; border-collapse:collapse; margin-top:8px }
-th,td { padding:6px; text-align:left; border:1px solid #ddd }
-pre { background:#f4f4f4; padding:8px; border-radius:4px; overflow:auto }
+/*
+==========================================================
+ETA PROFESSIONAL PWA
+Arquivo: style.css
+Versão: Alpha 0.1 - UI Industrial
+==========================================================
+*/
+
+
+/* =========================================
+   RESET
+========================================= */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+
+/* =========================================
+   VARIÁVEIS
+========================================= */
+
+:root {
+
+    --azul: #1565C0;
+    --azul-escuro: #0D47A1;
+    --cinza: #f4f6f9;
+    --branco: #ffffff;
+    --texto: #1e1e1e;
+    --verde: #2e7d32;
+    --vermelho: #c62828;
+
+    --sombra: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+
+/* =========================================
+   BODY
+========================================= */
+
+body {
+    background: var(--cinza);
+    color: var(--texto);
+}
+
+
+/* =========================================
+   SPLASH
+========================================= */
+
+#splash {
+
+    position: fixed;
+    inset: 0;
+
+    background: linear-gradient(
+        135deg,
+        var(--azul),
+        var(--azul-escuro)
+    );
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    color: white;
+
+    z-index: 9999;
+}
+
+.splash-logo {
+    font-size: 80px;
+    margin-bottom: 20px;
+}
+
+#splash h1 {
+    font-size: 32px;
+    letter-spacing: 2px;
+}
+
+#splash p {
+    margin-top: 10px;
+    opacity: 0.9;
+}
+
+
+/* =========================================
+   APP LAYOUT
+========================================= */
+
+#app {
+    display: none;
+    grid-template-columns: 240px 1fr;
+    min-height: 100vh;
+}
+
+
+/* =========================================
+   HEADER
+========================================= */
+
+header {
+    grid-column: 1 / -1;
+    background: var(--azul);
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: var(--sombra);
+}
+
+
+/* =========================================
+   MENU LATERAL
+========================================= */
+
+#menu {
+    background: white;
+    padding: 10px;
+    box-shadow: var(--sombra);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#menu button {
+    background: transparent;
+    border: none;
+    padding: 12px;
+    text-align: left;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: 0.2s;
+    font-size: 14px;
+}
+
+#menu button:hover {
+    background: var(--cinza);
+}
+
+
+/* =========================================
+   CONTEÚDO
+========================================= */
+
+#conteudo {
+    padding: 20px;
+}
+
+
+/* =========================================
+   DASHBOARD
+========================================= */
+
+.dashboard h2 {
+    margin-bottom: 10px;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: var(--sombra);
+    cursor: pointer;
+    transition: 0.2s;
+    text-align: center;
+    font-size: 18px;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+}
+
+
+/* =========================================
+   MÓDULOS
+========================================= */
+
+.modulo {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: var(--sombra);
+}
+
+.formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+input {
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    outline: none;
+}
+
+button {
+    padding: 10px;
+    border: none;
+    background: var(--azul);
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: var(--azul-escuro);
+}
+
+
+/* =========================================
+   TABELAS
+========================================= */
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+th, td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+th {
+    background: #f0f0f0;
+}
+
+
+/* =========================================
+   RESPONSIVO
+========================================= */
+
+@media (max-width: 768px) {
+
+    #app {
+        grid-template-columns: 1fr;
+    }
+
+    #menu {
+        flex-direction: row;
+        overflow-x: auto;
+    }
+
+}
