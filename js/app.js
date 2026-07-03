@@ -1,7 +1,7 @@
 const conteudo = document.getElementById("conteudo");
 
-function render(html) {
-    conteudo.innerHTML = html;
+if (!conteudo) {
+    console.error("Elemento #conteudo não encontrado");
 }
 
 function abrirModulo(nome) {
