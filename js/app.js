@@ -1,55 +1,160 @@
-const conteudo = document.getElementById("conteudo");
+/*
+==========================================================
+ETA PROFESSIONAL PWA
+Arquivo: js/app.js
+Controlador Principal
+Versão: Beta 1.0
+==========================================================
+*/
 
-if (!conteudo) {
-    console.error("Elemento #conteudo não encontrado");
+const conteudo = document.getElementById('conteudo');
+
+// =========================================
+// RENDERIZA O CONTEÚDO
+// =========================================
+function render(html) {
+  conteudo.innerHTML = html;
 }
 
-function abrirModulo(nome) {
+// =========================================
+// CARREGAMENTO DOS MÓDULOS
+// =========================================
+async function abrirModulo(modulo) {
+  try {
+    switch (modulo) {
+      case 'pac': {
+        const m = await import('../engine/pac.js');
+        render(m.pacView());
+        if (m.inicializarPAC) m.inicializarPAC();
+        break;
+      }
 
-    switch (nome) {
+      case 'cal': {
+        const m = await import('../engine/cal.js');
+        render(m.calView());
+        if (m.inicializarCAL) m.inicializarCAL();
+        break;
+      }
 
-        case "pac":
-            import("./engine/pac.js").then(m => {
-                render(m.pacView());
-                m.inicializarPAC();
-            });
-            break;
+      case 'polimero': {
+        const m = await import('../engine/polimero.js');
+        render(m.polimeroView());
+        if (m.inicializarPOLIMERO) m.inicializarPOLIMERO();
+        break;
+      }
 
-        case "cal":
-            import("./engine/cal.js").then(m => {
-                render(m.calView());
-                m.inicializarCAL();
-            });
-            break;
+      case 'balanco': {
+        const m = await import('../engine/balanco.js');
+        render(m.balancoView());
+        if (m.inicializarBALANCO) m.inicializarBALANCO();
+        break;
+      }
 
-        case "polimero":
-            import("./engine/polimero.js").then(m => {
-                render(m.polimeroView());
-                m.inicializarPOLIMERO();
-            });
-            break;
+      case 'jar': {
+        const m = await import('../engine/jar.js');
+        render(m.jarView());
+        if (m.inicializarJAR) m.inicializarJAR();
+        break;
+      }
 
-        case "balanco":
-            import("./engine/balanco.js").then(m => {
-                render(m.balancoView());
-            });
-            break;
+      case 'sedimentacao': {
+        const m = await import('../engine/sedimentacao.js');
+        import {
+          exportarPDF,
+          exportarExcel,
+          exportarJSON,
+          limparHistorico,
+        } from '../export/export.js';
+        import { quantidadeRegistros, ultimoRegistro } from './storage.js';
 
-        case "jar":
-            import("./engine/jar.js").then(m => {
-                render(m.jarView());
-                m.inicializarJAR();
-            });
-            break;
+        render(m.sedimentacaoView());
+        if (m.inicializarSEDIMENTACAO) m.inicializarSEDIMENTACAO();
+        break;
+      }
 
-        case "sedimentacao":
-            import("./engine/sedimentacao.js").then(m => {
-                render(m.sedimentacaoView());
-                m.inicializarSEDIMENTACAO();
-            });
-            break;
-
-        default:
-            render("<h2>Módulo não encontrado</h2>");
+      default:
+        render(`
+                    <div class="modulo">
+                        <h2>Módulo não encontrado</h2>
+                    </div>
+                `);
     }
+  } catch (erro) {
+    console.error(erro);
+    render(`
+            <div class="modulo">
+                <h2>Erro</h2>
+                <p>${erro.message}</p>
+            </div>
+        `);
+  }
 }
+
+// =========================================
+// DASHBOARD INICIAL
+// =========================================
+function dashboard() {
+  render(`
+        <div class="dashboard">
+            <h2>ETA Professional</h2>
+            <div class="cards">
+                <div class="card" data-modulo="pac">🧪 PAC Férrico</div>
+                <div class="card" data-modulo="cal">🧂 Cal Hidratada</div>
+                <div class="card" data-modulo="polimero">🧬 Polímero</div>
+                <div class="card" data-modulo="balanco">⚖ Balanço de Massa</div>
+                <div class="card" data-modulo="jar">🧫 Jar Test</div>
+                <div class="card" data-modulo="sedimentacao">💧 Sedimentação</div>
+            </div>
+        </div>
+    `);
+
+  //--------------------------------------------------
+  // Atualiza informações do Dashboard
+  //--------------------------------------------------
+  function atualizarDashboard() {
+    const total = quantidadeRegistros();
+    const ultimo = ultimoRegistro();
+
+    console.log('Registros:', total);
+
+    if (ultimo) {
+      console.log('Último módulo:', ultimo.modulo);
+    }
+  }
+
+  document.querySelectorAll('.card').forEach((card) => {
+    card.addEventListener('click', () => {
+      abrirModulo(card.dataset.modulo);
+    });
+  });
+}
+
+// =========================================
+// MENU SUPERIOR
+// =========================================
+function configurarMenu() {
+  document.querySelectorAll('[data-modulo]').forEach((botao) => {
+    botao.addEventListener('click', () => {
+      abrirModulo(botao.dataset.modulo);
+    });
+  });
+}
+
+// =========================================
+// SERVICE WORKER
+// =========================================
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('../service-worker.js').then(() => {
+      console.log('Service Worker ativo');
+    });
+  });
+}
+
+// =========================================
+// INICIALIZAÇÃO
+// =========================================
+window.addEventListener('DOMContentLoaded', () => {
+  configurarMenu();
+  dashboard();
+});

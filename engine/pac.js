@@ -1,216 +1,144 @@
 /*
 ==========================================================
 ETA PROFESSIONAL PWA
-Módulo: PAC Férrico
-Versão: Alpha 0.1 - Final Structure
+Módulo PAC Férrico
+Versão Beta 1.0
 ==========================================================
 */
 
-
-// =========================================
-// CÁLCULO PRINCIPAL
-// =========================================
-
-export function calcularPAC(
-    concentracao_gl,
-    densidade,
-    diluicao_percentual = 2,
-    volume_solucao_ml = 1000,
-    volume_jarro_l = 2
-) {
-
-    const resultado = {};
-
-    // =====================================
-    // TAL QUAL
-    // =====================================
-
-    const massa_produto = diluicao_percentual * 10;
-
-    const volume_talqual_ml = massa_produto / densidade;
-
-    const concentracao_talqual_gl =
-        (concentracao_gl * volume_talqual_ml) /
-        volume_solucao_ml;
-
-    const concentracao_talqual_mgl =
-        concentracao_talqual_gl * 1000;
-
-    resultado.talqual = {
-        volume_produto_ml: Number(volume_talqual_ml.toFixed(2)),
-        concentracao_mgl: Number(concentracao_talqual_mgl.toFixed(0))
-    };
-
-
-    // =====================================
-    // SOLUÇÃO SAL
-    // =====================================
-
-    const concentracao_desejada_gl =
-        diluicao_percentual * 10;
-
-    const volume_sal_ml =
-        (concentracao_desejada_gl * volume_solucao_ml) /
-        concentracao_gl;
-
-    const concentracao_sal_mgl =
-        concentracao_desejada_gl * 1000;
-
-    resultado.sal = {
-        volume_produto_ml: Number(volume_sal_ml.toFixed(2)),
-        concentracao_mgl: Number(concentracao_sal_mgl.toFixed(0))
-    };
-
-
-    // =====================================
-    // TABELAS DE DOSAGEM
-    // =====================================
-
-    resultado.tabelaTalQual = [];
-    resultado.tabelaSal = [];
-
-    for (let dosagem = 20; dosagem <= 120; dosagem += 10) {
-
-        const mlTalQual =
-            (dosagem * volume_jarro_l * 1000) /
-            concentracao_talqual_mgl;
-
-        const mlSal =
-            (dosagem * volume_jarro_l * 1000) /
-            concentracao_sal_mgl;
-
-        resultado.tabelaTalQual.push({
-            dosagem,
-            ml: Number(mlTalQual.toFixed(2))
-        });
-
-        resultado.tabelaSal.push({
-            dosagem,
-            ml: Number(mlSal.toFixed(2))
-        });
-    }
-
-    return resultado;
-}
-
-
-// =========================================
-// INTERFACE DO MÓDULO
-// =========================================
-
 export function pacView() {
+  return `
 
-    return `
+<div class="modulo">
 
-    <div class="modulo">
+<h2>PAC Férrico</h2>
 
-        <h2>🧪 PAC Férrico</h2>
+<div class="formulario">
 
-        <div class="formulario">
+<label>Concentração do Produto (mg/L)</label>
 
-            <label>Concentração (g/L)</label>
-            <input id="pac_conc" type="number" value="170">
+<input
+id="pacConcentracao"
+type="number"
+value="100000"
+>
 
-            <label>Densidade</label>
-            <input id="pac_dens" type="number" value="1.38" step="0.01">
+<label>Volume do Jarro (L)</label>
 
-            <label>Diluição (%)</label>
-            <input id="pac_diluicao" type="number" value="2">
+<input
+id="pacVolume"
+type="number"
+value="2"
+step="0.1"
+>
 
-            <label>Volume solução (mL)</label>
-            <input id="pac_vol" type="number" value="1000">
+<label>Dosagem Inicial (mg/L)</label>
 
-            <label>Volume jarro (L)</label>
-            <input id="pac_jarro" type="number" value="2">
+<input
+id="pacInicial"
+type="number"
+value="5"
+step="0.1"
+>
 
-            <button id="btnCalcularPAC">
-                CALCULAR
-            </button>
+<label>Dosagem Final (mg/L)</label>
 
-        </div>
+<input
+id="pacFinal"
+type="number"
+value="50"
+step="0.1"
+>
 
-        <div id="resultadoPAC"></div>
+<label>Incremento (mg/L)</label>
 
-    </div>
+<input
+id="pacIncremento"
+type="number"
+value="5"
+step="0.1"
+>
 
-    `;
+<button id="btnCalcularPAC">
+
+Calcular
+
+</button>
+
+</div>
+
+<div
+id="resultadoPAC"
+class="resultado"
+>
+
+</div>
+
+</div>
+
+`;
 }
 
-
-// =========================================
-// INICIALIZAÇÃO DO MÓDULO
-// =========================================
+//==========================================================
 
 export function inicializarPAC() {
-
-    const btn = document.getElementById("btnCalcularPAC");
-
-    if (!btn) return;
-
-    btn.addEventListener("click", () => {
-
-        const resultado = calcularPAC(
-
-            Number(document.getElementById("pac_conc").value),
-            Number(document.getElementById("pac_dens").value),
-            Number(document.getElementById("pac_diluicao").value),
-            Number(document.getElementById("pac_vol").value),
-            Number(document.getElementById("pac_jarro").value)
-
-        );
-
-        renderResultado(resultado);
-
-    });
-
+  document
+    .getElementById('btnCalcularPAC')
+    .addEventListener('click', calcularPAC);
 }
 
+//==========================================================
 
-// =========================================
-// RENDER RESULTADO
-// =========================================
+export function calcularPAC() {
+  const concentracao = parseFloat(
+    document.getElementById('pacConcentracao').value
+  );
 
-function renderResultado(r) {
+  const volume = parseFloat(document.getElementById('pacVolume').value);
 
-    let html = `
+  const inicial = parseFloat(document.getElementById('pacInicial').value);
 
-    <h3>📊 Resultados</h3>
+  const final = parseFloat(document.getElementById('pacFinal').value);
 
-    <h4>Tal Qual</h4>
+  const incremento = parseFloat(document.getElementById('pacIncremento').value);
 
-    <p>Volume: <b>${r.talqual.volume_produto_ml} mL</b></p>
-    <p>Concentração: <b>${r.talqual.concentracao_mgl} mg/L</b></p>
+  let html = '';
 
-    <hr>
+  html += `
 
-    <h4>Solução Sal</h4>
+<table>
 
-    <p>Volume: <b>${r.sal.volume_produto_ml} mL</b></p>
-    <p>Concentração: <b>${r.sal.concentracao_mgl} mg/L</b></p>
+<tr>
 
-    <hr>
+<th>Dosagem</th>
 
-    <h4>Tabela Tal Qual</h4>
+<th>mL</th>
 
-    <table>
-        <tr>
-            <th>Dosagem</th>
-            <th>mL</th>
-        </tr>
-    `;
+</tr>
 
-    r.tabelaTalQual.forEach(l => {
-        html += `
-        <tr>
-            <td>${l.dosagem}</td>
-            <td>${l.ml}</td>
-        </tr>
-        `;
-    });
+`;
+
+  for (let d = inicial; d <= final; d += incremento) {
+    const ml = ((d * volume) / concentracao) * 1000;
 
     html += `
-    </table>
-    `;
 
-    document.getElementById("resultadoPAC").innerHTML = html;
+<tr>
+
+<td>${d.toFixed(2)}</td>
+
+<td>${ml.toFixed(3)}</td>
+
+</tr>
+
+`;
+  }
+
+  html += `
+
+</table>
+
+`;
+
+  document.getElementById('resultadoPAC').innerHTML = html;
 }

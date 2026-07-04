@@ -1,169 +1,165 @@
 /*
 ==========================================================
 ETA PROFESSIONAL PWA
-Módulo: Polímero
-Versão: Alpha 0.1 - Final Structure
+Módulo Polímero
+Versão Beta 1.0
 ==========================================================
 */
 
-
-// =========================================
-// CÁLCULO PRINCIPAL
-// =========================================
-
-export function calcularPolimero(
-    concentracao_solucao_mg_l,
-    volume_jarro_l,
-    dosagem_inicial,
-    dosagem_final,
-    incremento
-) {
-
-    const resultado = {};
-    const tabela = [];
-
-    let dosagem = dosagem_inicial;
-
-    while (dosagem <= dosagem_final) {
-
-        const ml_jarro =
-            (dosagem *
-                volume_jarro_l *
-                1000) /
-            concentracao_solucao_mg_l;
-
-        tabela.push({
-            dosagem: Number(dosagem.toFixed(3)),
-            ml: Number(ml_jarro.toFixed(2))
-        });
-
-        dosagem += incremento;
-    }
-
-    resultado.concentracao =
-        concentracao_solucao_mg_l;
-
-    resultado.tabela = tabela;
-
-    return resultado;
-}
-
-
-// =========================================
-// INTERFACE
-// =========================================
+import { salvarHistorico } from '../js/storage.js';
 
 export function polimeroView() {
+  return `
 
-    return `
+<div class="modulo">
 
-    <div class="modulo">
+<h2>Polímero</h2>
 
-        <h2>🧬 Polímero</h2>
+<div class="formulario">
 
-        <div class="formulario">
+<label>Concentração da solução (mg/L)</label>
 
-            <label>Concentração (mg/L)</label>
-            <input id="pol_conc" type="number" value="1000">
+<input
+id="polConcentracao"
+type="number"
+value="1000"
+>
 
-            <label>Volume do Jarro (L)</label>
-            <input id="pol_jarro" type="number" value="2">
+<label>Volume do Jarro (L)</label>
 
-            <label>Dosagem Inicial</label>
-            <input id="pol_ini" type="number" value="20">
+<input
+id="polVolume"
+type="number"
+value="2"
+step="0.1"
+>
 
-            <label>Dosagem Final</label>
-            <input id="pol_fim" type="number" value="120">
+<label>Dosagem Inicial (mg/L)</label>
 
-            <label>Incremento</label>
-            <input id="pol_inc" type="number" value="10">
+<input
+id="polInicial"
+type="number"
+value="0.10"
+step="0.05"
+>
 
-            <button id="btnCalcularPOL">
-                CALCULAR
-            </button>
+<label>Dosagem Final (mg/L)</label>
 
-        </div>
+<input
+id="polFinal"
+type="number"
+value="2.00"
+step="0.05"
+>
 
-        <div id="resultadoPOL"></div>
+<label>Incremento (mg/L)</label>
 
-    </div>
+<input
+id="polIncremento"
+type="number"
+value="0.10"
+step="0.05"
+>
 
-    `;
+<button id="btnCalcularPOL">
+
+Calcular
+
+</button>
+
+</div>
+
+<div
+id="resultadoPOL"
+class="resultado">
+
+</div>
+
+</div>
+
+`;
 }
 
-
-// =========================================
-// INICIALIZAÇÃO
-// =========================================
+//==========================================================
 
 export function inicializarPOLIMERO() {
-
-    const btn =
-        document.getElementById("btnCalcularPOL");
-
-    if (!btn) return;
-
-    btn.addEventListener("click", () => {
-
-        const resultado = calcularPolimero(
-
-            Number(document.getElementById("pol_conc").value),
-            Number(document.getElementById("pol_jarro").value),
-            Number(document.getElementById("pol_ini").value),
-            Number(document.getElementById("pol_fim").value),
-            Number(document.getElementById("pol_inc").value)
-
-        );
-
-        renderResultadoPOL(resultado);
-
-    });
-
+  document
+    .getElementById('btnCalcularPOL')
+    .addEventListener('click', calcularPOLIMERO);
 }
 
+//==========================================================
 
-// =========================================
-// RESULTADO
-// =========================================
+export function calcularPOLIMERO() {
+  const concentracao = parseFloat(
+    document.getElementById('polConcentracao').value
+  );
 
-function renderResultadoPOL(r) {
+  const volume = parseFloat(document.getElementById('polVolume').value);
 
-    let html = `
+  const inicial = parseFloat(document.getElementById('polInicial').value);
 
-    <h3>📊 Resultado</h3>
+  const final = parseFloat(document.getElementById('polFinal').value);
 
-    <p>
-        Concentração:
-        <b>${r.concentracao} mg/L</b>
-    </p>
+  const incremento = parseFloat(document.getElementById('polIncremento').value);
 
-    <hr>
+  if (
+    isNaN(concentracao) ||
+    isNaN(volume) ||
+    isNaN(inicial) ||
+    isNaN(final) ||
+    isNaN(incremento)
+  ) {
+    alert('Preencha todos os campos.');
 
-    <h4>Tabela de Dosagem</h4>
+    return;
+  }
 
-    <table>
+  let html = `
 
-        <tr>
-            <th>Dosagem</th>
-            <th>mL</th>
-        </tr>
+<table>
 
-    `;
+<tr>
 
-    r.tabela.forEach(l => {
+<th>Dosagem (mg/L)</th>
 
-        html += `
-        <tr>
-            <td>${l.dosagem}</td>
-            <td>${l.ml}</td>
-        </tr>
-        `;
+<th>Volume (mL)</th>
 
+</tr>
+
+`;
+
+  const historico = [];
+
+  for (let dose = inicial; dose <= final + 0.00001; dose += incremento) {
+    const ml = (dose * volume * 1000) / concentracao;
+
+    historico.push({
+      dosagem: dose,
+
+      ml: ml,
     });
 
     html += `
-    </table>
-    `;
 
-    document.getElementById("resultadoPOL").innerHTML = html;
+<tr>
+
+<td>${dose.toFixed(2)}</td>
+
+<td>${ml.toFixed(3)}</td>
+
+</tr>
+
+`;
+  }
+
+  html += `
+
+</table>
+
+`;
+
+  document.getElementById('resultadoPOL').innerHTML = html;
+
+  salvarHistorico('Polímero', historico);
 }

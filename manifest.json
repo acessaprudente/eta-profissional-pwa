@@ -1,22 +1,42 @@
 {
-  "name": "ETA Professional",
+  "id": "/",
+  "name": "ETA Professional PWA",
   "short_name": "ETA Pro",
-  "start_url": "index.html",
+  "description": "Sistema profissional para operação de Estações de Tratamento de Água.",
+  "lang": "pt-BR",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#1565C0",
+  "orientation": "portrait",
+  "background_color": "#0D47A1",
   "theme_color": "#1565C0",
-  "orientation": "portrait-primary",
-  "description": "Sistema profissional para ETA - cálculos de PAC, CAL, polímero e processos físicos-químicos",
+
   "icons": [
     {
-      "src": "assets/icons/icon-192.png",
+      "src": "css/icon.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
     },
+
     {
-      "src": "assets/icons/icon-512.png",
+      "src": "css/icon.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any"
+    },
+
+    {
+      "src": "css/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
-  ]
+  ],
+
+  "categories": ["productivity", "utilities", "business"],
+
+  "prefer_related_applications": false,
+
+  "screenshots": []
 }

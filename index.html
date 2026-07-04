@@ -1,174 +1,42 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0">
-
-    <meta
-        name="theme-color"
-        content="#1565C0">
-
-    <meta
-        name="description"
-        content="ETA Professional PWA">
-
-    <title>ETA Professional</title>
-
-    <!-- PWA -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1565C0">
 
     <link rel="manifest" href="manifest.json">
-
-    <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
-
-    <!-- CSS -->
-
-    <link rel="stylesheet" href="css/style.css">
-
-    <link rel="stylesheet" href="css/dashboard.css">
-
-    <link rel="stylesheet" href="css/forms.css">
-
-    <link rel="stylesheet" href="css/tables.css">
-
-    <link rel="stylesheet" href="css/theme.css">
-
-    <link rel="stylesheet" href="css/responsive.css">
-
-</head>
-
-<body>
-
-    <!-- Splash -->
-
-    <div id="splash">
-
-        <div class="splash-logo">
-
-            💧
-
-        </div>
-
-        <h1>
-
-            ETA Professional
-
-        </h1>
-
-        <p>
-
-            Sistema Profissional para Estações de Tratamento de Água
-
-        </p>
-
-    </div>
-
-    <!-- Sistema -->
-
-    <div id="app">
-
-        <!-- Cabeçalho -->
-
-        <header>
-
-            <div class="logo">
-
-                💧 ETA Professional
-
-            </div>
-
-            <div class="versao">
-
-                Alpha 0.1
-
-            </div>
-
-        </header>
-
-        <!-- Menu -->
-
-        <aside id="menu">
-
-            <button data-page="home">
-
-                🏠
-                <span>Início</span>
-
-            </button>
-
-            <button data-page="pac">
-
-                🧪
-                <span>PAC</span>
-
-            </button>
-
-            <button data-page="cal">
-
-                ⚪
-                <span>Cal</span>
-
-            </button>
-
-            <button data-page="polimero">
-
-                🧬
-                <span>Polímero</span>
-
-            </button>
-
-            <button data-page="balanco">
-
-                ⚖️
-                <span>Balanço</span>
-
-            </button>
-
-            <button data-page="jar">
-
-                🧫
-                <span>Jar Test</span>
-
-            </button>
-
-            <button data-page="sedimentacao">
-
-                💧
-                <span>Sedimentação</span>
-
-            </button>
-
-            <button data-page="config">
-
-                ⚙️
-                <span>Configurações</span>
-
-            </button>
-
-        </aside>
-
-        <!-- Conteúdo -->
-
-        <main id="conteudo">
-
-        </main>
-
-    </div>
-
-    <!-- Bibliotecas >
+    <link rel="icon" href="css/icon.png">
+    <link rel="apple-touch-icon" href="css/icon.png">
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="ETA Professional">
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body>
+    <!-- HEADER -->
+    <header>
+        <h1>ETA Professional</h1>
+        <span>Versão Beta 1.0</span>
+    </header>
 
-    <script-- src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script-->
+    <!-- MENU -->
+    <nav id="menu">
+        <button data-modulo="pac">🧪 PAC Férrico</button>
+        <button data-modulo="cal">🧂 Cal Hidratada</button>
+        <button data-modulo="polimero">🧬 Polímero</button>
+        <button data-modulo="balanco">⚖️ Balanço</button>
+        <button data-modulo="jar">🧫 Jar Test</button>
+        <button data-modulo="sedimentacao">💧 Sedimentação</button>
+    </nav>
 
-    <!-- Sistema -->
+    <!-- ÁREA PRINCIPAL -->
+    <main id="conteudo"></main>
 
+    <!-- APP -->
     <script type="module" src="js/app.js"></script>
-
 </body>
-
 </html>

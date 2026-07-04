@@ -1,160 +1,210 @@
 /*
 ==========================================================
 ETA PROFESSIONAL PWA
-Módulo: Sedimentação
-Versão: Alpha 0.1 - Final Structure
+Módulo Sedimentação
+Versão Beta 1.0
 ==========================================================
 */
 
-
-// =========================================
-// CÁLCULO DE SEDIMENTAÇÃO
-// =========================================
-
-export function calcularSedimentacao(
-    velocidade_particula_m_s,
-    profundidade_m,
-    area_m2,
-    vazao_m3_s
-) {
-
-    const resultado = {};
-
-    // =====================================
-    // TEMPO DE SEDIMENTAÇÃO
-    // =====================================
-
-    const tempo_sedimentacao =
-        profundidade_m / velocidade_particula_m_s;
-
-    // =====================================
-    // CARGA SUPERFICIAL
-    // =====================================
-
-    const carga_superficial =
-        vazao_m3_s / area_m2;
-
-    // =====================================
-    // EFICIÊNCIA SIMPLIFICADA
-    // =====================================
-
-    let eficiencia = 0;
-
-    if (carga_superficial > 0) {
-
-        eficiencia =
-            (velocidade_particula_m_s /
-                carga_superficial) * 100;
-    }
-
-    resultado.tempo_sedimentacao_s =
-        Number(tempo_sedimentacao.toFixed(2));
-
-    resultado.carga_superficial_m3_m2_s =
-        Number(carga_superficial.toFixed(4));
-
-    resultado.eficiencia =
-        Number(eficiencia.toFixed(2));
-
-    return resultado;
-}
-
-
-// =========================================
-// INTERFACE
-// =========================================
+import { salvarHistorico } from '../js/storage.js';
 
 export function sedimentacaoView() {
+  return `
 
-    return `
+<div class="modulo">
 
-    <div class="modulo">
+<h2>Sedimentação / Decantação</h2>
 
-        <h2>💧 Sedimentação</h2>
+<div class="formulario">
 
-        <div class="formulario">
+<label>Vazão da ETA (m³/h)</label>
+<input
+id="sedVazao"
+type="number"
+value="100"
+step="0.01">
 
-            <label>Velocidade Partícula (m/s)</label>
-            <input id="sed_vel" type="number" value="0.0005">
+<label>Área do Decantador (m²)</label>
+<input
+id="sedArea"
+type="number"
+value="50"
+step="0.01">
 
-            <label>Profundidade (m)</label>
-            <input id="sed_prof" type="number" value="3">
+<label>Volume do Decantador (m³)</label>
+<input
+id="sedVolume"
+type="number"
+value="150"
+step="0.01">
 
-            <label>Área (m²)</label>
-            <input id="sed_area" type="number" value="50">
+<label>Turbidez de Entrada (NTU)</label>
+<input
+id="sedEntrada"
+type="number"
+value="100"
+step="0.1">
 
-            <label>Vazão (m³/s)</label>
-            <input id="sed_vazao" type="number" value="0.5">
+<label>Turbidez de Saída (NTU)</label>
+<input
+id="sedSaida"
+type="number"
+value="2"
+step="0.1">
 
-            <button id="btnCalcularSED">
-                CALCULAR
-            </button>
+<button id="btnSedimentacao">
 
-        </div>
+Calcular
 
-        <div id="resultadoSED"></div>
+</button>
 
-    </div>
+</div>
 
-    `;
+<div id="resultadoSedimentacao"></div>
+
+</div>
+
+`;
 }
 
-
-// =========================================
-// INICIALIZAÇÃO
-// =========================================
+//==================================================
 
 export function inicializarSEDIMENTACAO() {
-
-    const btn =
-        document.getElementById("btnCalcularSED");
-
-    if (!btn) return;
-
-    btn.addEventListener("click", () => {
-
-        const r = calcularSedimentacao(
-
-            Number(document.getElementById("sed_vel").value),
-            Number(document.getElementById("sed_prof").value),
-            Number(document.getElementById("sed_area").value),
-            Number(document.getElementById("sed_vazao").value)
-
-        );
-
-        renderResultadoSED(r);
-
-    });
-
+  document
+    .getElementById('btnSedimentacao')
+    .addEventListener('click', calcularSedimentacao);
 }
 
+//==================================================
 
-// =========================================
-// RESULTADO
-// =========================================
+export function calcularSedimentacao() {
+  const vazao = parseFloat(document.getElementById('sedVazao').value);
 
-function renderResultadoSED(r) {
+  const area = parseFloat(document.getElementById('sedArea').value);
 
-    let html = `
+  const volume = parseFloat(document.getElementById('sedVolume').value);
 
-    <h3>📊 Resultado</h3>
+  const entrada = parseFloat(document.getElementById('sedEntrada').value);
 
-    <p>
-        Tempo de Sedimentação:
-        <b>${r.tempo_sedimentacao_s} s</b>
-    </p>
+  const saida = parseFloat(document.getElementById('sedSaida').value);
 
-    <p>
-        Carga Superficial:
-        <b>${r.carga_superficial_m3_m2_s}</b>
-    </p>
+  if (
+    isNaN(vazao) ||
+    isNaN(area) ||
+    isNaN(volume) ||
+    isNaN(entrada) ||
+    isNaN(saida)
+  ) {
+    alert('Preencha todos os campos.');
 
-    <p>
-        Eficiência:
-        <b>${r.eficiencia}%</b>
-    </p>
+    return;
+  }
 
-    `;
+  //------------------------------------
+  // Taxa de aplicação superficial
+  //------------------------------------
 
-    document.getElementById("resultadoSED").innerHTML = html;
+  const taxa = vazao / area;
+
+  //------------------------------------
+  // Tempo de detenção
+  //------------------------------------
+
+  const tempo = volume / vazao;
+
+  //------------------------------------
+  // Eficiência
+  //------------------------------------
+
+  const eficiencia = ((entrada - saida) / entrada) * 100;
+
+  //------------------------------------
+
+  let classificacao = '';
+
+  if (eficiencia >= 95) {
+    classificacao = 'Excelente';
+  } else if (eficiencia >= 90) {
+    classificacao = 'Muito Boa';
+  } else if (eficiencia >= 80) {
+    classificacao = 'Boa';
+  } else if (eficiencia >= 70) {
+    classificacao = 'Regular';
+  } else {
+    classificacao = 'Necessita Ajustes';
+  }
+
+  //------------------------------------
+
+  let html = `
+
+<table>
+
+<tr>
+
+<th>Parâmetro</th>
+
+<th>Resultado</th>
+
+</tr>
+
+<tr>
+
+<td>Taxa Superficial</td>
+
+<td>${taxa.toFixed(2)} m³/m².h</td>
+
+</tr>
+
+<tr>
+
+<td>Tempo de Detenção</td>
+
+<td>${tempo.toFixed(2)} horas</td>
+
+</tr>
+
+<tr>
+
+<td>Eficiência de Remoção</td>
+
+<td>${eficiencia.toFixed(2)} %</td>
+
+</tr>
+
+<tr>
+
+<td>Classificação</td>
+
+<td><strong>${classificacao}</strong></td>
+
+</tr>
+
+</table>
+
+`;
+
+  document.getElementById('resultadoSedimentacao').innerHTML = html;
+
+  //------------------------------------
+
+  salvarHistorico('Sedimentação', {
+    vazao,
+
+    area,
+
+    volume,
+
+    entrada,
+
+    saida,
+
+    taxa,
+
+    tempo,
+
+    eficiencia,
+
+    classificacao,
+  });
 }

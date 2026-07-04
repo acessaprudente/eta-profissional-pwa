@@ -2,77 +2,136 @@
 ==========================================================
 ETA PROFESSIONAL PWA
 Service Worker
-Versão: Alpha 0.1
+Versão Beta 1.0
 ==========================================================
 */
 
-const CACHE_NAME = "eta-professional-v1";
+const CACHE_NAME = 'eta-professional-v1.0.0';
 
-const FILES_TO_CACHE = [
+//==========================================================
+// ARQUIVOS PARA CACHE
+//==========================================================
 
-  "./",
-  "./index.html",
+const CACHE_FILES = [
+  './',
 
-  "./css/style.css",
-  "./css/dashboard.css",
-  "./css/forms.css",
-  "./css/tables.css",
-  "./css/theme.css",
-  "./css/responsive.css",
+  './index.html',
 
-  "./js/app.js",
-  "./js/util.js",
-  "./js/storage.js",
+  './manifest.json',
 
-  "./engine/pac.js",
-  "./engine/cal.js",
-  "./engine/polimero.js",
-  "./engine/balanco.js",
-  "./engine/jar.js",
-  "./engine/sedimentacao.js",
+  './css/style.css',
 
-  "./export/export.js",
+  './css/icon.png',
 
-  "./manifest.json"
+  './js/app.js',
+
+  './js/util.js',
+
+  './js/storage.js',
+
+  './export/export.js',
+
+  './engine/pac.js',
+
+  './engine/cal.js',
+
+  './engine/polimero.js',
+
+  './engine/balanco.js',
+
+  './engine/jar.js',
+
+  './engine/sedimentacao.js',
 ];
 
+//==========================================================
+// INSTALAÇÃO
+//==========================================================
 
-// INSTALL
-self.addEventListener("install", (event) => {
-
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(FILES_TO_CACHE);
-    })
-  );
-
-  self.skipWaiting();
-});
-
-
-// ACTIVATE
-self.addEventListener("activate", (event) => {
+self.addEventListener('install', (event) => {
+  console.log('Service Worker instalado.');
 
   event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys
-          .filter((key) => key !== CACHE_NAME)
-          .map((key) => caches.delete(key))
-      );
-    })
-  );
+    caches
+      .open(CACHE_NAME)
 
-  self.clients.claim();
+      .then((cache) => cache.addAll(CACHE_FILES))
+
+      .then(() => self.skipWaiting())
+  );
 });
 
+//==========================================================
+// ATIVAÇÃO
+//==========================================================
 
-// FETCH
-self.addEventListener("fetch", (event) => {
+self.addEventListener('activate', (event) => {
+  console.log('Service Worker ativado.');
+
+  event.waitUntil(
+    caches
+      .keys()
+
+      .then((keys) => {
+        return Promise.all(
+          keys.map((key) => {
+            if (key !== CACHE_NAME) {
+              return caches.delete(key);
+            }
+          })
+        );
+      })
+
+      .then(() => self.clients.claim())
+  );
+});
+
+//==========================================================
+// INTERCEPTAR REQUISIÇÕES
+//==========================================================
+
+self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') {
+    return;
+  }
 
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
-    })
+    caches
+      .match(event.request)
+
+      .then((response) => {
+        if (response) {
+          return response;
+        }
+
+        return fetch(event.request).then((networkResponse) => {
+          const clone = networkResponse.clone();
+
+          caches
+            .open(CACHE_NAME)
+
+            .then((cache) => {
+              cache.put(event.request, clone);
+            });
+
+          return networkResponse;
+        });
+      })
+
+      .catch(() => {
+        if (event.request.mode === 'navigate') {
+          return caches.match('./index.html');
+        }
+      })
   );
+});
+
+//==========================================================
+// MENSAGENS
+//==========================================================
+
+self.addEventListener('message', (event) => {
+  if (event.data === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });

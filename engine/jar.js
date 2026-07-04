@@ -1,180 +1,178 @@
 /*
 ==========================================================
 ETA PROFESSIONAL PWA
-Módulo: Jar Test
-Versão: Alpha 0.1 - Final Structure
+Módulo Jar Test
+Versão Beta 1.0
 ==========================================================
 */
 
-
-// =========================================
-// CÁLCULO SIMULADO DE JAR TEST
-// =========================================
-
-export function calcularJarTest(
-    dosagem_inicial,
-    dosagem_final,
-    incremento,
-    turbidez_inicial = 100
-) {
-
-    const resultado = {};
-    const tabela = [];
-
-    let melhorDosagem = null;
-    let menorTurbidez = Infinity;
-
-    for (
-        let dosagem = dosagem_inicial;
-        dosagem <= dosagem_final;
-        dosagem += incremento
-    ) {
-
-        // Simulação simplificada de redução de turbidez
-        const turbidez_final =
-            turbidez_inicial *
-            Math.exp(-dosagem / 50);
-
-        tabela.push({
-            dosagem: Number(dosagem.toFixed(2)),
-            turbidez: Number(turbidez_final.toFixed(2))
-        });
-
-        // Identifica melhor ponto
-        if (turbidez_final < menorTurbidez) {
-            menorTurbidez = turbidez_final;
-            melhorDosagem = dosagem;
-        }
-    }
-
-    resultado.tabela = tabela;
-    resultado.melhorDosagem = Number(
-        melhorDosagem.toFixed(2)
-    );
-    resultado.menorTurbidez = Number(
-        menorTurbidez.toFixed(2)
-    );
-
-    return resultado;
-}
-
-
-// =========================================
-// INTERFACE
-// =========================================
+import { salvarHistorico } from '../js/storage.js';
 
 export function jarView() {
+  return `
 
-    return `
+<div class="modulo">
 
-    <div class="modulo">
+<h2>Jar Test</h2>
 
-        <h2>🧫 Jar Test</h2>
+<div class="formulario">
 
-        <div class="formulario">
+<label>Volume do Jarro (L)</label>
+<input id="jarVolume" type="number" value="2" step="0.1">
 
-            <label>Dosagem Inicial</label>
-            <input id="jar_ini" type="number" value="10">
+<label>Concentração da Solução de PAC (mg/L)</label>
+<input id="jarConcentracao" type="number" value="20000">
 
-            <label>Dosagem Final</label>
-            <input id="jar_fim" type="number" value="200">
+<label>Dosagem Inicial (mg/L)</label>
+<input id="jarInicial" type="number" value="5">
 
-            <label>Incremento</label>
-            <input id="jar_inc" type="number" value="10">
+<label>Dosagem Final (mg/L)</label>
+<input id="jarFinal" type="number" value="50">
 
-            <label>Turbidez Inicial</label>
-            <input id="jar_turb" type="number" value="100">
+<label>Incremento (mg/L)</label>
+<input id="jarIncremento" type="number" value="5">
 
-            <button id="btnCalcularJAR">
-                CALCULAR
-            </button>
+<button id="btnMontarJar">
+Montar Jar Test
+</button>
 
-        </div>
+</div>
 
-        <div id="resultadoJAR"></div>
+<div id="resultadoJar"></div>
 
-    </div>
+</div>
 
-    `;
+`;
 }
 
-
-// =========================================
-// INICIALIZAÇÃO
-// =========================================
+//==========================================================
 
 export function inicializarJAR() {
-
-    const btn =
-        document.getElementById("btnCalcularJAR");
-
-    if (!btn) return;
-
-    btn.addEventListener("click", () => {
-
-        const r = calcularJarTest(
-
-            Number(document.getElementById("jar_ini").value),
-            Number(document.getElementById("jar_fim").value),
-            Number(document.getElementById("jar_inc").value),
-            Number(document.getElementById("jar_turb").value)
-
-        );
-
-        renderResultadoJAR(r);
-
-    });
-
+  document
+    .getElementById('btnMontarJar')
+    .addEventListener('click', calcularJar);
 }
 
+//==========================================================
 
-// =========================================
-// RESULTADO
-// =========================================
+export function calcularJar() {
+  const volume = parseFloat(document.getElementById('jarVolume').value);
 
-function renderResultadoJAR(r) {
+  const concentracao = parseFloat(
+    document.getElementById('jarConcentracao').value
+  );
 
-    let html = `
+  const inicial = parseFloat(document.getElementById('jarInicial').value);
 
-    <h3>📊 Resultado</h3>
+  const final = parseFloat(document.getElementById('jarFinal').value);
 
-    <p>
-        Melhor Dosagem:
-        <b>${r.melhorDosagem}</b>
-    </p>
+  const incremento = parseFloat(document.getElementById('jarIncremento').value);
 
-    <p>
-        Menor Turbidez:
-        <b>${r.menorTurbidez}</b>
-    </p>
+  if (
+    isNaN(volume) ||
+    isNaN(concentracao) ||
+    isNaN(inicial) ||
+    isNaN(final) ||
+    isNaN(incremento)
+  ) {
+    alert('Preencha todos os campos.');
 
-    <hr>
+    return;
+  }
 
-    <h4>Tabela de Resultados</h4>
+  let html = `
 
-    <table>
+<table>
 
-        <tr>
-            <th>Dosagem</th>
-            <th>Turbidez</th>
-        </tr>
+<tr>
 
-    `;
+<th>Jarro</th>
+<th>Dosagem (mg/L)</th>
+<th>Pipetar (mL)</th>
+<th>Turbidez Final (NTU)</th>
+<th>Observação</th>
 
-    r.tabela.forEach(l => {
+</tr>
 
-        html += `
-        <tr>
-            <td>${l.dosagem}</td>
-            <td>${l.turbidez}</td>
-        </tr>
-        `;
+`;
 
-    });
+  let historico = [];
+
+  let jarro = 1;
+
+  for (let dose = inicial; dose <= final + 0.00001; dose += incremento) {
+    const ml = (dose * volume * 1000) / concentracao;
 
     html += `
-    </table>
-    `;
 
-    document.getElementById("resultadoJAR").innerHTML = html;
+<tr>
+
+<td>${jarro}</td>
+
+<td>${dose.toFixed(2)}</td>
+
+<td>${ml.toFixed(2)}</td>
+
+<td>
+<input
+type="number"
+id="ntu${jarro}"
+style="width:80px">
+</td>
+
+<td>
+<input
+type="text"
+id="obs${jarro}"
+placeholder="Observações">
+</td>
+
+</tr>
+
+`;
+
+    historico.push({
+      jarro,
+
+      dosagem: dose,
+
+      ml,
+    });
+
+    jarro++;
+  }
+
+  html += `
+
+</table>
+
+<br>
+
+<button id="btnSalvarJar">
+
+Salvar Resultado
+
+</button>
+
+`;
+
+  document.getElementById('resultadoJar').innerHTML = html;
+
+  document
+    .getElementById('btnSalvarJar')
+    .addEventListener('click', () => salvarResultado(historico));
+}
+
+//==========================================================
+
+function salvarResultado(historico) {
+  historico.forEach((item) => {
+    item.ntu = document.getElementById('ntu' + item.jarro).value;
+
+    item.observacao = document.getElementById('obs' + item.jarro).value;
+  });
+
+  salvarHistorico('Jar Test', historico);
+
+  alert('Jar Test salvo com sucesso.');
 }

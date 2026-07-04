@@ -1,167 +1,143 @@
 /*
 ==========================================================
 ETA PROFESSIONAL PWA
-Módulo: Cal Hidratada
-Versão: Alpha 0.1 - Final Structure
+Módulo Cal Hidratada
+Versão Beta 1.0
 ==========================================================
 */
 
-
-// =========================================
-// CÁLCULO PRINCIPAL
-// =========================================
-
-export function calcularCAL(
-    concentracao_solucao_gl,
-    volume_jarro_l,
-    dosagem_inicial,
-    dosagem_final,
-    incremento
-) {
-
-    const resultado = {};
-    const tabela = [];
-
-    let dosagem = dosagem_inicial;
-
-    while (dosagem <= dosagem_final) {
-
-        const ml_jarro =
-            (dosagem * volume_jarro_l) /
-            concentracao_solucao_gl;
-
-        tabela.push({
-            dosagem: Number(dosagem.toFixed(2)),
-            ml: Number(ml_jarro.toFixed(2))
-        });
-
-        dosagem += incremento;
-    }
-
-    resultado.concentracao =
-        concentracao_solucao_gl * 1000;
-
-    resultado.tabela = tabela;
-
-    return resultado;
-}
-
-
-// =========================================
-// INTERFACE
-// =========================================
-
 export function calView() {
+  return `
 
-    return `
+<div class="modulo">
 
-    <div class="modulo">
+<h2>Cal Hidratada</h2>
 
-        <h2>⚪ Cal Hidratada</h2>
+<div class="formulario">
 
-        <div class="formulario">
+<label>Concentração da solução (mg/L)</label>
 
-            <label>Concentração (g/L)</label>
-            <input id="cal_conc" type="number" value="10">
+<input
+id="calConcentracao"
+type="number"
+value="10000"
+>
 
-            <label>Volume do Jarro (L)</label>
-            <input id="cal_jarro" type="number" value="2">
+<label>Volume do Jarro (L)</label>
 
-            <label>Dosagem Inicial</label>
-            <input id="cal_ini" type="number" value="20">
+<input
+id="calVolume"
+type="number"
+value="2"
+step="0.1"
+>
 
-            <label>Dosagem Final</label>
-            <input id="cal_fim" type="number" value="120">
+<label>Dosagem Inicial (mg/L)</label>
 
-            <label>Incremento</label>
-            <input id="cal_inc" type="number" value="10">
+<input
+id="calInicial"
+type="number"
+value="5"
+step="0.1"
+>
 
-            <button id="btnCalcularCAL">
-                CALCULAR
-            </button>
+<label>Dosagem Final (mg/L)</label>
 
-        </div>
+<input
+id="calFinal"
+type="number"
+value="50"
+step="0.1"
+>
 
-        <div id="resultadoCAL"></div>
+<label>Incremento (mg/L)</label>
 
-    </div>
+<input
+id="calIncremento"
+type="number"
+value="5"
+step="0.1"
+>
 
-    `;
+<button id="btnCalcularCAL">
+
+Calcular
+
+</button>
+
+</div>
+
+<div
+id="resultadoCAL"
+class="resultado">
+
+</div>
+
+</div>
+
+`;
 }
 
-
-// =========================================
-// INICIALIZAÇÃO
-// =========================================
+//==========================================================
 
 export function inicializarCAL() {
-
-    const btn =
-        document.getElementById("btnCalcularCAL");
-
-    if (!btn) return;
-
-    btn.addEventListener("click", () => {
-
-        const resultado = calcularCAL(
-
-            Number(document.getElementById("cal_conc").value),
-            Number(document.getElementById("cal_jarro").value),
-            Number(document.getElementById("cal_ini").value),
-            Number(document.getElementById("cal_fim").value),
-            Number(document.getElementById("cal_inc").value)
-
-        );
-
-        renderResultadoCAL(resultado);
-
-    });
-
+  document
+    .getElementById('btnCalcularCAL')
+    .addEventListener('click', calcularCAL);
 }
 
+//==========================================================
 
-// =========================================
-// RESULTADO
-// =========================================
+export function calcularCAL() {
+  const concentracao = parseFloat(
+    document.getElementById('calConcentracao').value
+  );
 
-function renderResultadoCAL(r) {
+  const volume = parseFloat(document.getElementById('calVolume').value);
 
-    let html = `
+  const inicial = parseFloat(document.getElementById('calInicial').value);
 
-    <h3>📊 Resultado</h3>
+  const final = parseFloat(document.getElementById('calFinal').value);
 
-    <p>
-        Concentração:
-        <b>${r.concentracao} mg/L</b>
-    </p>
+  const incremento = parseFloat(document.getElementById('calIncremento').value);
 
-    <hr>
+  let html = '';
 
-    <h4>Tabela de Dosagem</h4>
+  html += `
 
-    <table>
+<table>
 
-        <tr>
-            <th>Dosagem</th>
-            <th>mL</th>
-        </tr>
+<tr>
 
-    `;
+<th>Dosagem (mg/L)</th>
 
-    r.tabela.forEach(l => {
+<th>Volume (mL)</th>
 
-        html += `
-        <tr>
-            <td>${l.dosagem}</td>
-            <td>${l.ml}</td>
-        </tr>
-        `;
+</tr>
 
-    });
+`;
+
+  for (let dose = inicial; dose <= final; dose += incremento) {
+    const ml = (dose * volume * 1000) / concentracao;
 
     html += `
-    </table>
-    `;
 
-    document.getElementById("resultadoCAL").innerHTML = html;
+<tr>
+
+<td>${dose.toFixed(2)}</td>
+
+<td>${ml.toFixed(2)}</td>
+
+</tr>
+
+`;
+  }
+
+  html += `
+
+</table>
+
+`;
+
+  document.getElementById('resultadoCAL').innerHTML = html;
 }

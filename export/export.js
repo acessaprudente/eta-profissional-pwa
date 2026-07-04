@@ -1,117 +1,161 @@
 /*
 ==========================================================
 ETA PROFESSIONAL PWA
-Módulo: Exportação (PDF / Excel)
-Versão: Alpha 0.1
+Módulo Exportação
+Versão Beta 1.0
 ==========================================================
 */
 
+import { obterHistorico } from '../js/storage.js';
 
-// =========================================
+//======================================================
 // EXPORTAR PDF
-// =========================================
+//======================================================
 
-export function exportarPDF(titulo = "ETA Professional", conteudo = "") {
+export function exportarPDF() {
+  if (typeof window.jspdf === 'undefined') {
+    alert('Biblioteca jsPDF não encontrada.');
 
-    const { jsPDF } = window.jspdf;
+    return;
+  }
 
-    const doc = new jsPDF();
+  const { jsPDF } = window.jspdf;
 
-    doc.setFont("helvetica", "bold");
-    doc.text(titulo, 10, 10);
+  const pdf = new jsPDF();
 
-    doc.setFont("helvetica", "normal");
-    doc.text(String(conteudo), 10, 20);
+  const historico = obterHistorico();
 
-    doc.save("relatorio_eta.pdf");
+  pdf.setFontSize(18);
+
+  pdf.text('ETA Professional', 20, 20);
+
+  pdf.setFontSize(11);
+
+  pdf.text('Relatório de Operação', 20, 30);
+
+  let linha = 45;
+
+  if (historico.length === 0) {
+    pdf.text('Nenhum registro encontrado.', 20, linha);
+  } else {
+    historico.forEach((item, index) => {
+      pdf.setFont(undefined, 'bold');
+
+      pdf.text(`${index + 1}. ${item.modulo}`, 20, linha);
+
+      linha += 8;
+
+      pdf.setFont(undefined, 'normal');
+
+      pdf.text(JSON.stringify(item.dados), 25, linha);
+
+      linha += 15;
+
+      if (linha > 270) {
+        pdf.addPage();
+
+        linha = 20;
+      }
+    });
+  }
+
+  pdf.save('ETA_Professional.pdf');
 }
 
-
-// =========================================
+//======================================================
 // EXPORTAR EXCEL
-// =========================================
+//======================================================
 
-export function exportarExcel(dados = [], nome = "eta_dados") {
+export function exportarExcel() {
+  if (typeof XLSX === 'undefined') {
+    alert('Biblioteca XLSX não encontrada.');
 
-    const wb = XLSX.utils.book_new();
+    return;
+  }
 
-    const ws = XLSX.utils.json_to_sheet(dados);
+  const historico = obterHistorico();
 
-    XLSX.utils.book_append_sheet(wb, ws, "Dados");
+  if (historico.length === 0) {
+    alert('Não existem dados para exportar.');
 
-    XLSX.writeFile(wb, nome + ".xlsx");
+    return;
+  }
+
+  const dados = [];
+
+  historico.forEach((item) => {
+    dados.push({
+      Modulo: item.modulo,
+
+      Data: item.data,
+
+      Resultado: JSON.stringify(item.dados),
+    });
+  });
+
+  const planilha = XLSX.utils.json_to_sheet(dados);
+
+  const livro = XLSX.utils.book_new();
+
+  XLSX.utils.book_append_sheet(
+    livro,
+
+    planilha,
+
+    'Histórico'
+  );
+
+  XLSX.writeFile(
+    livro,
+
+    'ETA_Professional.xlsx'
+  );
 }
 
+//======================================================
+// LIMPAR HISTÓRICO
+//======================================================
 
-// =========================================
-// EXPORTAR PAC
-// =========================================
+export function limparHistorico() {
+  if (confirm('Deseja apagar todo o histórico?')) {
+    localStorage.removeItem('ETA_HISTORICO');
 
-export function exportarPAC(resultado) {
-
-    const dados = [
-
-        {
-            modulo: "PAC",
-            tipo: "Tal Qual",
-            volume_ml: resultado.talqual.volume_produto_ml,
-            concentracao: resultado.talqual.concentracao_mgl
-        },
-
-        {
-            modulo: "PAC",
-            tipo: "Solução Sal",
-            volume_ml: resultado.sal.volume_produto_ml,
-            concentracao: resultado.sal.concentracao_mgl
-        }
-
-    ];
-
-    exportarExcel(dados, "pac_resultado");
+    alert('Histórico apagado.');
+  }
 }
 
+//======================================================
+// EXPORTAÇÃO JSON
+//======================================================
 
-// =========================================
-// EXPORTAR CAL
-// =========================================
+export function exportarJSON() {
+  const historico = obterHistorico();
 
-export function exportarCAL(resultado) {
+  const blob = new Blob(
+    [
+      JSON.stringify(
+        historico,
 
-    exportarExcel(resultado.tabela, "cal_resultado");
-}
+        null,
 
+        4
+      ),
+    ],
 
-// =========================================
-// EXPORTAR POLÍMERO
-// =========================================
-
-export function exportarPOLIMERO(resultado) {
-
-    exportarExcel(resultado.tabela, "polimero_resultado");
-}
-
-
-// =========================================
-// EXPORTAÇÃO GENÉRICA
-// =========================================
-
-export function exportarModulo(nome, resultado) {
-
-    switch (nome) {
-
-        case "pac":
-            exportarPAC(resultado);
-            break;
-
-        case "cal":
-            exportarCAL(resultado);
-            break;
-
-        case "polimero":
-            exportarPOLIMERO(resultado);
-            break;
-
-        default:
-            exportarExcel(resultado, nome);
+    {
+      type: 'application/json',
     }
+  );
+
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+
+  a.href = url;
+
+  a.download = 'ETA_Professional.json';
+
+  a.click();
+
+  URL.revokeObjectURL(url);
 }
