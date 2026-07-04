@@ -224,3 +224,11 @@ export function restaurarBackup(backup) {
 
   return true;
 }
+export function salvarParametros(chave, dados) {
+  localStorage.setItem('eta_' + chave, JSON.stringify(dados));
+}
+
+export function carregarParametros(chave) {
+  const dados = localStorage.getItem('eta_' + chave);
+  return dados ? JSON.parse(dados) : null;
+}
