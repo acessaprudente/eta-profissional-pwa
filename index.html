@@ -1,42 +1,94 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#1565C0">
 
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" href="css/icon.png">
-    <link rel="apple-touch-icon" href="css/icon.png">
+<meta charset="UTF-8">
 
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="ETA Professional">
+<meta name="viewport"
+content="width=device-width,initial-scale=1">
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<title>ETA Professional PWA</title>
+
+<meta name="theme-color" content="#1565C0">
+
+<meta name="description"
+content="Sistema Profissional para Operação de ETA">
+
+<meta name="mobile-web-app-capable"
+content="yes">
+
+<meta name="apple-mobile-web-app-capable"
+content="yes">
+
+<meta name="apple-mobile-web-app-status-bar-style"
+content="default">
+
+<meta name="apple-mobile-web-app-title"
+content="ETA Professional">
+
+<link rel="manifest"
+href="manifest.json">
+
+<link rel="icon"
+href="css/icon.png">
+
+<link rel="apple-touch-icon"
+href="css/icon.png">
+
+<link rel="stylesheet"
+href="css/style.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
 </head>
+
 <body>
-    <!-- HEADER -->
-    <header>
-        <h1>ETA Professional</h1>
-        <span>Versão Beta 1.0</span>
-    </header>
 
-    <!-- MENU -->
-    <nav id="menu">
-        <button data-modulo="pac">🧪 PAC Férrico</button>
-        <button data-modulo="cal">🧂 Cal Hidratada</button>
-        <button data-modulo="polimero">🧬 Polímero</button>
-        <button data-modulo="balanco">⚖️ Balanço</button>
-        <button data-modulo="jar">🧫 Jar Test</button>
-        <button data-modulo="sedimentacao">💧 Sedimentação</button>
-    </nav>
+<header>
 
-    <!-- ÁREA PRINCIPAL -->
-    <main id="conteudo"></main>
+<h1>ETA Professional</h1>
 
-    <!-- APP -->
-    <script type="module" src="js/app.js"></script>
+<p>Sistema Profissional para Estação de Tratamento de Água</p>
+
+</header>
+
+<nav id="menu">
+
+<button data-modulo="dashboard">🏠 Dashboard</button>
+
+<button data-modulo="pac">🧪 PAC</button>
+
+<button data-modulo="cal">🧂 Cal</button>
+
+<button data-modulo="polimero">🧬 Polímero</button>
+
+<button data-modulo="balanco">⚖️ Balanço</button>
+
+<button data-modulo="jar">🧪 Jar Test</button>
+
+<button data-modulo="sedimentacao">💧 Sedimentação</button>
+
+<button id="btnPDF">📄 PDF</button>
+
+<button id="btnExcel">📊 Excel</button>
+
+</nav>
+
+<main id="conteudo">
+
+</main>
+
+<footer>
+
+ETA Professional Beta 1.0
+
+</footer>
+
+<script type="module" src="js/app.js"></script>
+
 </body>
+
 </html>
