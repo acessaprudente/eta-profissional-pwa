@@ -7,6 +7,15 @@ Versão: Beta 1.0
 ==========================================================
 */
 
+import {
+  exportarPDF,
+  exportarExcel,
+  exportarJSON,
+  limparHistorico,
+} from '../export/export.js';
+
+import { quantidadeRegistros, ultimoRegistro } from './storage.js';
+
 const conteudo = document.getElementById('conteudo');
 
 // =========================================
@@ -59,14 +68,6 @@ async function abrirModulo(modulo) {
 
       case 'sedimentacao': {
         const m = await import('../engine/sedimentacao.js');
-        import {
-          exportarPDF,
-          exportarExcel,
-          exportarJSON,
-          limparHistorico,
-        } from '../export/export.js';
-        import { quantidadeRegistros, ultimoRegistro } from './storage.js';
-
         render(m.sedimentacaoView());
         if (m.inicializarSEDIMENTACAO) m.inicializarSEDIMENTACAO();
         break;
@@ -74,19 +75,19 @@ async function abrirModulo(modulo) {
 
       default:
         render(`
-                    <div class="modulo">
-                        <h2>Módulo não encontrado</h2>
-                    </div>
-                `);
+          <div class="modulo">
+            <h2>Módulo não encontrado</h2>
+          </div>
+        `);
     }
   } catch (erro) {
     console.error(erro);
     render(`
-            <div class="modulo">
-                <h2>Erro</h2>
-                <p>${erro.message}</p>
-            </div>
-        `);
+      <div class="modulo">
+        <h2>Erro</h2>
+        <p>${erro.message}</p>
+      </div>
+    `);
   }
 }
 
@@ -95,18 +96,18 @@ async function abrirModulo(modulo) {
 // =========================================
 function dashboard() {
   render(`
-        <div class="dashboard">
-            <h2>ETA Professional</h2>
-            <div class="cards">
-                <div class="card" data-modulo="pac">🧪 PAC Férrico</div>
-                <div class="card" data-modulo="cal">🧂 Cal Hidratada</div>
-                <div class="card" data-modulo="polimero">🧬 Polímero</div>
-                <div class="card" data-modulo="balanco">⚖ Balanço de Massa</div>
-                <div class="card" data-modulo="jar">🧫 Jar Test</div>
-                <div class="card" data-modulo="sedimentacao">💧 Sedimentação</div>
-            </div>
-        </div>
-    `);
+    <div class="dashboard">
+      <h2>ETA Professional</h2>
+      <div class="cards">
+        <div class="card" data-modulo="pac">🧪 PAC Férrico</div>
+        <div class="card" data-modulo="cal">🧂 Cal Hidratada</div>
+        <div class="card" data-modulo="polimero">🧬 Polímero</div>
+        <div class="card" data-modulo="balanco">⚖ Balanço de Massa</div>
+        <div class="card" data-modulo="jar">🧫 Jar Test</div>
+        <div class="card" data-modulo="sedimentacao">💧 Sedimentação</div>
+      </div>
+    </div>
+  `);
 
   //--------------------------------------------------
   // Atualiza informações do Dashboard
