@@ -1,157 +1,49 @@
-/*
-==========================================================
-ETA PROFESSIONAL PWA
-Módulo Balanço de Massa
-Versão Beta 1.0
-==========================================================
-*/
+// engine/balanco.js
 
-import { salvarHistorico } from '../js/storage.js';
+import { salvarParametros, carregarParametros } from '../js/storage.js';
 
 export function balancoView() {
+  const saved = carregarParametros('balanco') || {};
+
   return `
+        <h2>⚖️ Balanço de Massa — Mistura 3 Pontos</h2>
 
-<div class="modulo">
+        <section class="inputs">
 
-<h2>Balanço de Massa</h2>
+            <label>Vazão Q1 (m³/h)</label>
+            <input id="bal_q1" value="${saved.Q1 ?? ''}" type="number">
 
-<div class="formulario">
+            ...
 
-<label>Vazão da ETA (m³/h)</label>
+            <button id="btnCalcularBalanco">
+                📊 Calcular
+            </button>
 
-<input
-id="vazao"
-type="number"
-value="100"
-step="0.01">
+            <button id="btnSalvarBalanco">
+                💾 Salvar
+            </button>
 
-<label>Dosagem de PAC (mg/L)</label>
+        </section>
 
-<input
-id="dosagem"
-type="number"
-value="30"
-step="0.1">
+        <section class="results">
 
-<label>Concentração do PAC (%)</label>
+            <div id="bal_resumo"></div>
 
-<input
-id="concentracao"
-type="number"
-value="10"
-step="0.1">
+            <table id="bal_tabela"></table>
 
-<button id="btnBalanco">
+            <pre id="bal_resultado"
+                 style="display:none"></pre>
 
-Calcular
-
-</button>
-
-</div>
-
-<div id="resultadoBalanco"></div>
-
-</div>
-
-`;
+        </section>
+    `;
 }
-
-//================================================
 
 export function inicializarBALANCO() {
   document
-    .getElementById('btnBalanco')
+    .getElementById('btnCalcularBalanco')
     .addEventListener('click', calcularBalanco);
-}
 
-//================================================
-
-export function calcularBalanco() {
-  const vazao = parseFloat(document.getElementById('vazao').value);
-
-  const dosagem = parseFloat(document.getElementById('dosagem').value);
-
-  const concentracao = parseFloat(
-    document.getElementById('concentracao').value
-  );
-
-  if (isNaN(vazao) || isNaN(dosagem) || isNaN(concentracao)) {
-    alert('Preencha todos os campos.');
-
-    return;
-  }
-
-  const consumoHora = (vazao * 1000 * dosagem) / 1000000;
-
-  const consumoDia = consumoHora * 24;
-
-  const consumoMes = consumoDia * 30;
-
-  const consumoAno = consumoDia * 365;
-
-  let html = `
-
-<table>
-
-<tr>
-
-<th>Descrição</th>
-
-<th>Valor</th>
-
-</tr>
-
-<tr>
-
-<td>Consumo por hora</td>
-
-<td>${consumoHora.toFixed(2)} kg/h</td>
-
-</tr>
-
-<tr>
-
-<td>Consumo diário</td>
-
-<td>${consumoDia.toFixed(2)} kg/dia</td>
-
-</tr>
-
-<tr>
-
-<td>Consumo mensal</td>
-
-<td>${consumoMes.toFixed(2)} kg/mês</td>
-
-</tr>
-
-<tr>
-
-<td>Consumo anual</td>
-
-<td>${consumoAno.toFixed(2)} kg/ano</td>
-
-</tr>
-
-</table>
-
-`;
-
-  document.getElementById('resultadoBalanco').innerHTML = html;
-
-  salvarHistorico('Balanço de Massa', {
-    vazao,
-
-    dosagem,
-
-    concentracao,
-
-    consumoHora,
-
-    consumoDia,
-
-    consumoMes,
-
-    consumoAno,
-  });
+  document
+    .getElementById('btnSalvarBalanco')
+    .addEventListener('click', salvarBalanco);
 }
