@@ -8,7 +8,7 @@
 import { pacView, inicializarPAC } from '../engine/pac.js';
 import { calView, inicializarCAL } from '../engine/cal.js';
 import { polimeroView, inicializarPOLIMERO } from '../engine/polimero.js';
-import { balancoView, inicializarBALANCO } from '../engine/balanco.js';
+import { balancoView, inicializarBalanco } from '../engine/balanco.js'; // ← CORRIGIDO
 import { jarView, inicializarJAR } from '../engine/jar.js';
 import {
   sedimentacaoView,
@@ -43,7 +43,7 @@ const MODULOS = {
 
   balanco: {
     view: balancoView,
-    init: inicializarBALANCO,
+    init: inicializarBalanco, // ← CORRIGIDO (sem maiúsculas extras)
   },
 
   jar: {
