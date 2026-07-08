@@ -224,6 +224,16 @@ document.getElementById("statusSistema").innerHTML=
 });
 
 </script>
+<script>
+  console.log('GitHub Pages environment:', window.location.hostname);
+  // Força o recarregamento do módulo
+  window.addEventListener('load', function() {
+      console.log('Page fully loaded');
+      if (typeof inicializarBalanco === 'function') {
+          inicializarBalanco();
+      }
+  });
+  </script>
 
 </body>
 
