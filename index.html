@@ -5,29 +5,37 @@
 
 <meta charset="UTF-8">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
 <title>ETA Professional PWA</title>
 
-<meta name="description" content="Sistema Profissional para Operação de Estações de Tratamento de Água">
+<meta name="description"
+content="Sistema Profissional para Operação de Estações de Tratamento de Água">
 
 <meta name="theme-color" content="#1565C0">
 
 <meta name="mobile-web-app-capable" content="yes">
 
-<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable"
+content="yes">
 
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style"
+content="default">
 
-<meta name="apple-mobile-web-app-title" content="ETA Professional">
+<meta name="apple-mobile-web-app-title"
+content="ETA Professional">
 
-<link rel="manifest" href="manifest.json">
+<link rel="manifest"
+href="manifest.json">
 
-<link rel="icon" href="css/icon.png">
+<link rel="icon"
+href="css/icon.png">
 
-<link rel="apple-touch-icon" href="css/icon.png">
+<link rel="apple-touch-icon"
+href="css/icon.png">
 
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet"
+href="css/style.css">
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
@@ -37,7 +45,7 @@
 
 <body>
 
-<div class="layout">
+<div class="app">
 
 <header class="topbar">
 
@@ -47,7 +55,13 @@
 
 </div>
 
-<div class="top-info">
+<div class="titulo">
+
+Sistema Profissional para ETA
+
+</div>
+
+<div class="status">
 
 <div id="statusSistema">
 
@@ -55,9 +69,9 @@
 
 </div>
 
-<div id="dataHora">
+<div id="relogio">
 
---/--/---- --:--
+--/--/----
 
 </div>
 
@@ -65,9 +79,7 @@
 
 </header>
 
-<div class="principal">
-
-<aside class="sidebar">
+<nav class="menuSuperior">
 
 <button data-modulo="dashboard">
 
@@ -77,13 +89,13 @@
 
 <button data-modulo="pac">
 
-🧪 PAC Férrico
+🧪 PAC
 
 </button>
 
 <button data-modulo="cal">
 
-🧂 Cal Hidratada
+🧂 Cal
 
 </button>
 
@@ -95,7 +107,7 @@
 
 <button data-modulo="balanco">
 
-⚖️ Balanço de Massa
+⚖️ Balanço
 
 </button>
 
@@ -111,35 +123,35 @@
 
 </button>
 
-<hr>
+<div class="espaco"></div>
 
 <button id="btnPDF">
 
-📄 Exportar PDF
+📄 PDF
 
 </button>
 
 <button id="btnExcel">
 
-📊 Exportar Excel
+📊 Excel
 
 </button>
 
-</aside>
+</nav>
 
-<main id="conteudo" class="conteudo">
+<main id="conteudo">
 
-<div class="loading">
+<div class="boasvindas">
 
-<h2>
+<h1>
 
 Bem-vindo ao ETA Professional
 
-</h2>
+</h1>
 
 <p>
 
-Carregando sistema...
+Selecione um módulo acima.
 
 </p>
 
@@ -147,9 +159,7 @@ Carregando sistema...
 
 </main>
 
-</div>
-
-<footer class="rodape">
+<footer>
 
 <div>
 
@@ -159,17 +169,13 @@ ETA Professional Beta 1.0
 
 <div>
 
-GitHub Pages | PWA | Offline
+GitHub Pages
 
 </div>
 
 <div>
 
-<span id="versao">
-
-Versão Alpha 1
-
-</span>
+PWA
 
 </div>
 
@@ -185,9 +191,15 @@ function atualizarRelogio(){
 
 const agora=new Date();
 
-document.getElementById("dataHora").innerHTML=
+document.getElementById("relogio").innerHTML=
 
-agora.toLocaleDateString("pt-BR")+" "+agora.toLocaleTimeString("pt-BR");
+agora.toLocaleDateString("pt-BR")
+
++" "
+
++
+
+agora.toLocaleTimeString("pt-BR");
 
 }
 
@@ -197,13 +209,17 @@ atualizarRelogio();
 
 window.addEventListener("online",()=>{
 
-document.getElementById("statusSistema").innerHTML="🟢 Online";
+document.getElementById("statusSistema").innerHTML=
+
+"🟢 Online";
 
 });
 
 window.addEventListener("offline",()=>{
 
-document.getElementById("statusSistema").innerHTML="🔴 Offline";
+document.getElementById("statusSistema").innerHTML=
+
+"🔴 Offline";
 
 });
 

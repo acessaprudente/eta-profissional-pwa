@@ -1,263 +1,478 @@
-/*
-==========================================================
-ETA PROFESSIONAL PWA
-Arquivo: style.css
-Versão: Alpha 0.1 - UI Industrial
-==========================================================
-*/
+/*=====================================================
+ ETA PROFESSIONAL PWA
+=====================================================*/
 
-
-/* =========================================
-   RESET
-========================================= */
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: Arial, Helvetica, sans-serif;
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
 }
 
+:root{
 
-/* =========================================
-   VARIÁVEIS
-========================================= */
+    --azul:#1565C0;
+    --azul2:#0D47A1;
+    --cinza:#ECEFF1;
+    --cinza2:#F7F9FC;
+    --verde:#2E7D32;
+    --vermelho:#C62828;
+    --branco:#FFFFFF;
+    --texto:#263238;
 
-:root {
-
-    --azul: #1565C0;
-    --azul-escuro: #0D47A1;
-    --cinza: #f4f6f9;
-    --branco: #ffffff;
-    --texto: #1e1e1e;
-    --verde: #2e7d32;
-    --vermelho: #c62828;
-
-    --sombra: 0 6px 20px rgba(0,0,0,0.15);
 }
 
+html{
 
-/* =========================================
-   BODY
-========================================= */
+    height:100%;
 
-body {
-    background: var(--cinza);
-    color: var(--texto);
 }
 
+body{
 
-/* =========================================
-   SPLASH
-========================================= */
+    height:100%;
 
-#splash {
+    font-family:Segoe UI,Tahoma,Arial,sans-serif;
 
-    position: fixed;
-    inset: 0;
+    background:var(--cinza);
 
-    background: linear-gradient(
-        135deg,
-        var(--azul),
-        var(--azul-escuro)
-    );
+    color:var(--texto);
 
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-
-    color: white;
-
-    z-index: 9999;
 }
 
-.splash-logo {
-    font-size: 80px;
-    margin-bottom: 20px;
+/*=====================================================*/
+
+.app{
+
+    display:flex;
+
+    flex-direction:column;
+
+    min-height:100vh;
+
 }
 
-#splash h1 {
-    font-size: 32px;
-    letter-spacing: 2px;
+/*==================== TOPO ============================*/
+
+.topbar{
+
+    height:70px;
+
+    background:linear-gradient(90deg,#0D47A1,#1976D2);
+
+    color:white;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    padding:0 25px;
+
+    box-shadow:0 3px 8px rgba(0,0,0,.25);
+
 }
 
-#splash p {
-    margin-top: 10px;
-    opacity: 0.9;
+.logo{
+
+    font-size:28px;
+
+    font-weight:bold;
+
 }
 
+.titulo{
 
-/* =========================================
-   APP LAYOUT
-========================================= */
+    font-size:18px;
 
-#app {
-    display: none;
-    grid-template-columns: 240px 1fr;
-    min-height: 100vh;
 }
 
+.status{
 
-/* =========================================
-   HEADER
-========================================= */
+    display:flex;
 
-header {
-    grid-column: 1 / -1;
-    background: var(--azul);
-    color: white;
-    padding: 15px 20px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: var(--sombra);
+    gap:20px;
+
+    font-size:15px;
+
 }
 
+/*==================== MENU ============================*/
 
-/* =========================================
-   MENU LATERAL
-========================================= */
+.menuSuperior{
 
-#menu {
-    background: white;
-    padding: 10px;
-    box-shadow: var(--sombra);
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    display:flex;
+
+    flex-wrap:wrap;
+
+    align-items:center;
+
+    gap:10px;
+
+    padding:12px 15px;
+
+    background:white;
+
+    border-bottom:1px solid #d7d7d7;
+
+    box-shadow:0 2px 6px rgba(0,0,0,.08);
+
 }
 
-#menu button {
-    background: transparent;
-    border: none;
-    padding: 12px;
-    text-align: left;
-    cursor: pointer;
-    border-radius: 8px;
-    transition: 0.2s;
-    font-size: 14px;
+.espaco{
+
+    flex:1;
+
 }
 
-#menu button:hover {
-    background: var(--cinza);
+.menuSuperior button{
+
+    background:var(--azul);
+
+    color:white;
+
+    border:none;
+
+    border-radius:8px;
+
+    padding:11px 18px;
+
+    font-size:15px;
+
+    cursor:pointer;
+
+    transition:.25s;
+
 }
 
+.menuSuperior button:hover{
 
-/* =========================================
-   CONTEÚDO
-========================================= */
+    background:var(--azul2);
 
-#conteudo {
-    padding: 20px;
+    transform:translateY(-2px);
+
+    box-shadow:0 5px 10px rgba(0,0,0,.18);
+
 }
 
+/*==================== CONTEÚDO ============================*/
 
-/* =========================================
-   DASHBOARD
-========================================= */
+main{
 
-.dashboard h2 {
-    margin-bottom: 10px;
+    flex:1;
+
+    padding:25px;
+
 }
 
-.cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 15px;
-    margin-top: 20px;
+/*==================== CARDS ============================*/
+
+.card{
+
+    background:white;
+
+    border-radius:12px;
+
+    padding:18px;
+
+    margin-bottom:20px;
+
+    box-shadow:0 2px 8px rgba(0,0,0,.12);
+
 }
 
-.card {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: var(--sombra);
-    cursor: pointer;
-    transition: 0.2s;
-    text-align: center;
-    font-size: 18px;
+/*==================== MÓDULOS ============================*/
+
+.modulo{
+
+    background:white;
+
+    border-radius:12px;
+
+    padding:20px;
+
+    box-shadow:0 3px 10px rgba(0,0,0,.10);
+
 }
 
-.card:hover {
-    transform: translateY(-4px);
+.modulo h2{
+
+    color:var(--azul2);
+
+    margin-bottom:20px;
+
 }
 
+/*==================== INPUTS ============================*/
 
-/* =========================================
-   MÓDULOS
-========================================= */
+label{
 
-.modulo {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: var(--sombra);
+    display:block;
+
+    margin-top:12px;
+
+    margin-bottom:5px;
+
+    font-weight:bold;
+
 }
 
-.formulario {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    margin-top: 15px;
+input{
+
+    width:100%;
+
+    padding:10px;
+
+    border-radius:6px;
+
+    border:1px solid #bdbdbd;
+
+    font-size:15px;
+
 }
 
-input {
-    padding: 10px;
-    border-radius: 6px;
-    border: 1px solid #ddd;
-    outline: none;
+select{
+
+    width:100%;
+
+    padding:10px;
+
+    border-radius:6px;
+
+    border:1px solid #bdbdbd;
+
 }
 
-button {
-    padding: 10px;
-    border: none;
-    background: var(--azul);
-    color: white;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: 0.2s;
+/*==================== BOTÕES ============================*/
+
+button{
+
+    cursor:pointer;
+
 }
 
-button:hover {
-    background: var(--azul-escuro);
+.inputs button{
+
+    margin-top:15px;
+
+    margin-right:8px;
+
+    background:var(--azul);
+
+    color:white;
+
+    border:none;
+
+    padding:11px 18px;
+
+    border-radius:8px;
+
 }
 
+.inputs button:hover{
 
-/* =========================================
-   TABELAS
-========================================= */
+    background:var(--azul2);
 
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 15px;
 }
 
-th, td {
-    padding: 8px;
-    border: 1px solid #ddd;
-    text-align: center;
+/*==================== RESULTADOS ============================*/
+
+.results{
+
+    margin-top:25px;
+
 }
 
-th {
-    background: #f0f0f0;
+.results h4{
+
+    margin-bottom:12px;
+
 }
 
+pre{
 
-/* =========================================
-   RESPONSIVO
-========================================= */
+    background:#f5f5f5;
 
-@media (max-width: 768px) {
+    border-radius:8px;
 
-    #app {
-        grid-template-columns: 1fr;
-    }
+    padding:12px;
 
-    #menu {
-        flex-direction: row;
-        overflow-x: auto;
-    }
+    overflow:auto;
+
+}
+
+/*==================== TABELAS ============================*/
+
+table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+    background:white;
+
+}
+
+th{
+
+    background:var(--azul);
+
+    color:white;
+
+}
+
+th,td{
+
+    padding:10px;
+
+    border:1px solid #ddd;
+
+}
+
+tr:nth-child(even){
+
+    background:#fafafa;
+
+}
+
+/*==================== DASHBOARD ============================*/
+
+.dashboard{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+
+    gap:20px;
+
+}
+
+.dashboard .card{
+
+    text-align:center;
+
+}
+
+.dashboard h3{
+
+    margin-bottom:12px;
+
+}
+
+/*==================== BOAS VINDAS ============================*/
+
+.boasvindas{
+
+    text-align:center;
+
+    margin-top:60px;
+
+}
+
+.boasvindas h1{
+
+    color:var(--azul2);
+
+    margin-bottom:15px;
+
+}
+
+/*==================== RODAPÉ ============================*/
+
+footer{
+
+    background:var(--azul2);
+
+    color:white;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    padding:12px 20px;
+
+}
+
+/*==================== CELULAR ============================*/
+
+@media(max-width:900px){
+
+.topbar{
+
+    flex-direction:column;
+
+    height:auto;
+
+    padding:15px;
+
+    gap:10px;
+
+}
+
+.titulo{
+
+    display:none;
+
+}
+
+.status{
+
+    flex-direction:column;
+
+    gap:5px;
+
+    align-items:center;
+
+}
+
+.menuSuperior{
+
+    justify-content:center;
+
+}
+
+.menuSuperior button{
+
+    width:180px;
+
+}
+
+footer{
+
+    flex-direction:column;
+
+    gap:8px;
+
+    text-align:center;
+
+}
+
+}
+
+/*==================== ANIMAÇÕES ============================*/
+
+.modulo{
+
+    animation:fade .35s;
+
+}
+
+@keyframes fade{
+
+from{
+
+opacity:0;
+
+transform:translateY(15px);
+
+}
+
+to{
+
+opacity:1;
+
+transform:translateY(0);
+
+}
 
 }
