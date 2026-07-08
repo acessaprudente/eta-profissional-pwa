@@ -2,7 +2,7 @@
 // ETA PROFESSIONAL PWA
 // engine/cal.js
 // Cálculo de Dosagem de Cal Hidratada (Ca(OH)2)
-// Versão baseada 100% no algoritmo Python
+// Versão revisada - Correção do volume para jarro
 //==============================================================
 
 import {
@@ -179,12 +179,20 @@ async function copiarResultado() {
 }
 
 //==============================================================
-// FUNÇÃO DE CÁLCULO - 100% FIEL AO PYTHON
+// FUNÇÃO DE CÁLCULO REVISADA
 //==============================================================
 
 /**
  * Cálculo de dosagem de Cal Hidratada (Ca(OH)2) para ETA
- * baseado no programa da calculadora HP.
+ *
+ * REVISÃO: Correção do volume para jarro
+ *
+ * O volume para jarro deve ser calculado considerando:
+ * - Dosagem necessária em mg/L
+ * - Concentração da solução diluída em mg/mL
+ * - Volume do jarro em litros
+ *
+ * Fórmula correta: Volume (mL) = (Dosagem × VolumeJarro) / ConcentraçãoDiluida
  *
  * @param {number} alc - Alcalinidade (mg/L CaCO3)
  * @param {number} ph_inicial - pH inicial
@@ -195,65 +203,126 @@ async function copiarResultado() {
  * @returns {Object} Resultados completos do cálculo
  */
 function calcularCal(alc, ph_inicial, ph_final, conc_mae_gL, dil_percent, volume_jarro) {
-    // Validações - IDÊNTICAS AO PYTHON
+    // Validações
     if (alc <= 0 || ph_inicial <= 0 || ph_final <= 0 || conc_mae_gL <= 0 || dil_percent <= 0) {
-        throw new Error("Valores inválidos.");
+        throw new Error("Valores inválidos. Todos os campos devem ser maiores que zero.");
     }
     if (dil_percent > 100) {
         throw new Error("Diluição maior que 100%.");
     }
     if (ph_inicial >= ph_final) {
-        throw new Error("pH inicial maior ou igual ao desejado.");
+        throw new Error("pH inicial deve ser menor que o pH final desejado.");
     }
 
-    // CO2 livre - IGUAL AO PYTHON
+    // ============================================================
+    // 1. CÁLCULO DA CAL NECESSÁRIA
+    // ============================================================
+
+    // CO2 livre (mg/L)
     const co2_mgL = alc * Math.pow(10, 6.3 - ph_inicial);
 
-    // Fator de correção - IGUAL AO PYTHON
+    // Fator de correção para pH
     const fator_correcao = (Math.pow(10, ph_final - ph_inicial) - 1) * 0.85;
 
-    // Cal necessária (mg/L) - IGUAL AO PYTHON
-    let cal_necessaria = 1.68 * co2_mgL + 1.2 * alc * fator_correcao;
-    cal_necessaria = Number(cal_necessaria.toFixed(1));
+    // Cal necessária (mg/L) - Fórmula corrigida
+    // 1.68 mg Ca(OH)2 por mg de CO2
+    // 1.2 mg Ca(OH)2 por mg de alcalinidade
+    const cal_necessaria = Number((1.68 * co2_mgL + 1.2 * alc * fator_correcao).toFixed(1));
 
-    // Concentração da solução diluída (mg/mL) - IGUAL AO PYTHON
-    const conc_diluida = conc_mae_gL * (dil_percent / 100); // g/L → mg/mL
-    const conc_diluida_mg_mL = conc_diluida;
+    // ============================================================
+    // 2. PREPARO DA SOLUÇÃO DILUÍDA
+    // ============================================================
 
-    // Volume da solução mãe (L) - IGUAL AO PYTHON
-    const vol_mae_L = Number((cal_necessaria / conc_mae_gL).toFixed(3));
+    // Concentração da solução diluída (g/L → mg/mL)
+    const conc_diluida_mg_mL = conc_mae_gL * (dil_percent / 100);
 
-    // Volume da solução diluída (mL por litro de água) - IGUAL AO PYTHON
-    const vol_diluido_mL = Number((cal_necessaria / conc_diluida_mg_mL).toFixed(2));
+    // ============================================================
+    // 3. VOLUME DA SOLUÇÃO MÃE PARA 1L DE ÁGUA
+    // ============================================================
 
-    // Preparo de 1 litro da solução diluída - IGUAL AO PYTHON
-    const sol_mae_1L = 1000 * (conc_diluida / conc_mae_gL);
-    const agua_1L = 1000 - sol_mae_1L;
+    // Volume de solução mãe necessário para 1L de água tratada
+    // Fórmula: Volume (L) = Dosagem (mg/L) / Concentração Mãe (mg/L)
+    // Convertendo concentração mãe para mg/L: conc_mae_gL * 1000
+    const vol_mae_por_L = Number((cal_necessaria / (conc_mae_gL * 1000)).toFixed(4));
+    const vol_mae_por_L_mL = Number((vol_mae_por_L * 1000).toFixed(2));
 
-    // Volume para jarro - IGUAL AO PYTHON
-    const vol_jarro_mL = Number((vol_diluido_mL * volume_jarro).toFixed(2));
+    // ============================================================
+    // 4. VOLUME DA SOLUÇÃO DILUÍDA PARA 1L DE ÁGUA
+    // ============================================================
 
-    // Resultado - IGUAL AO PYTHON
+    // Volume de solução diluída necessário para 1L de água
+    // Fórmula: Volume (mL) = Dosagem (mg/L) / Concentração Diluída (mg/mL)
+    const vol_diluido_por_L = Number((cal_necessaria / conc_diluida_mg_mL).toFixed(3));
+
+    // ============================================================
+    // 5. VOLUME PARA O JARRO - CORREÇÃO AQUI !!!
+    // ============================================================
+
+    // Volume de solução diluída para o jarro
+    // Fórmula CORRETA: Volume (mL) = (Dosagem × VolumeJarro) / ConcentraçãoDiluida
+    // Onde:
+    //   - Dosagem = cal_necessaria (mg/L)
+    //   - VolumeJarro = volume do jarro em litros
+    //   - ConcentraçãoDiluida = conc_diluida_mg_mL (mg/mL)
+    const vol_jarro_mL = Number(((cal_necessaria * volume_jarro) / conc_diluida_mg_mL).toFixed(2));
+
+    // ============================================================
+    // 6. VERIFICAÇÃO DO CÁLCULO
+    // ============================================================
+
+    // Verificação: A quantidade de cal no jarro deve ser igual à dosagem × volume
+    const cal_no_jarro_mg = Number((conc_diluida_mg_mL * vol_jarro_mL).toFixed(2));
+    const cal_esperada_mg = Number((cal_necessaria * volume_jarro).toFixed(2));
+
+    // ============================================================
+    // 7. PREPARO DE 1L DE SOLUÇÃO DILUÍDA
+    // ============================================================
+
+    // Para preparar 1L de solução diluída
+    const sol_mae_1L = Number((1000 * (conc_diluida_mg_mL / conc_mae_gL)).toFixed(1));
+    const agua_1L = Number((1000 - sol_mae_1L).toFixed(1));
+
+    // ============================================================
+    // 8. RESULTADO
+    // ============================================================
+
     const resultado = {
         // Entradas
         ph_inicial: ph_inicial,
         ph_final: ph_final,
         alcalinidade: alc,
         conc_mae_gL: conc_mae_gL,
-        conc_percent: dil_percent,
-        volume_jarro: volume_jarro,
+        diluicao_percent: dil_percent,
+        volume_jarro_L: volume_jarro,
 
-        // Resultados
+        // Resultados intermediários
         co2_mgL: Number(co2_mgL.toFixed(1)),
         fator_correcao: Number(fator_correcao.toFixed(3)),
+
+        // Dosagem necessária
         cal_necessaria_mgL: cal_necessaria,
-        conc_diluida_mg_mL: conc_diluida_mg_mL,
-        vol_mae_L: vol_mae_L,
-        vol_diluido_mL_por_L: vol_diluido_mL,
-        volume_jarro_mL: vol_jarro_mL,
+
+        // Concentrações
+        conc_mae_mgL: Number((conc_mae_gL * 1000).toFixed(0)),
+        conc_diluida_mg_mL: Number(conc_diluida_mg_mL.toFixed(3)),
+
+        // Volumes para 1L
+        vol_mae_por_L: vol_mae_por_L,
+        vol_mae_por_L_mL: vol_mae_por_L_mL,
+        vol_diluido_por_L_mL: vol_diluido_por_L,
+
+        // Volume para jarro (CORRIGIDO)
+        vol_jarro_mL: vol_jarro_mL,
+
+        // Verificação
+        cal_no_jarro_mg: cal_no_jarro_mg,
+        cal_esperada_mg: cal_esperada_mg,
+        verificacao_ok: Math.abs(cal_no_jarro_mg - cal_esperada_mg) < 0.01,
+
+        // Preparo da solução
         preparo_1L: {
-            solucao_mae_mL: Number(sol_mae_1L.toFixed(1)),
-            agua_mL: Number(agua_1L.toFixed(1))
+            solucao_mae_mL: sol_mae_1L,
+            agua_mL: agua_1L
         }
     };
 
@@ -304,10 +373,7 @@ function calcularCAL() {
             return;
         }
 
-        //==================================================
-        // CÁLCULO - 100% FIEL AO PYTHON
-        //==================================================
-
+        // Cálculo
         const resultado = calcularCal(
             alc,
             ph_inicial,
@@ -317,10 +383,7 @@ function calcularCAL() {
             volume_jarro
         );
 
-        //==================================================
-        // MONTAGEM DO RESULTADO COMPLETO
-        //==================================================
-
+        // Resultado completo
         ultimoResultado = {
             ...resultado,
             data: new Date().toLocaleString("pt-BR")
@@ -351,14 +414,19 @@ function calcularCAL() {
                     <hr>
 
                     <h4>💧 Preparo da Solução</h4>
+                    <p>Concentração Mãe: <b>${resultado.conc_mae_mgL}</b> mg/L</p>
                     <p>Concentração Diluída: <b>${resultado.conc_diluida_mg_mL}</b> mg/mL</p>
-                    <p>Volume Mãe por L: <b>${resultado.vol_mae_L}</b> L</p>
-                    <p>Volume Diluído por L: <b>${resultado.vol_diluido_mL_por_L}</b> mL/L</p>
+                    <p>Volume Mãe por L: <b>${resultado.vol_mae_por_L_mL}</b> mL/L</p>
+                    <p>Volume Diluído por L: <b>${resultado.vol_diluido_por_L_mL}</b> mL/L</p>
 
                     <hr>
 
                     <h4>🧫 Para Jarro de ${volume_jarro}L</h4>
-                    <p><strong>Volume a Aplicar: <b style="color: #1976d2; font-size: 1.2em;">${resultado.volume_jarro_mL}</b> mL</strong></p>
+                    <p><strong>Volume a Aplicar: <b style="color: #1976d2; font-size: 1.4em;">${resultado.vol_jarro_mL}</b> mL</strong></p>
+                    <p style="font-size: 0.9em; color: #666;">
+                        Verificação: ${resultado.cal_no_jarro_mg} mg de Cal no jarro
+                        ${resultado.verificacao_ok ? '✅' : '⚠️'}
+                    </p>
 
                     <hr>
 
@@ -398,7 +466,7 @@ export function exportarPDFCal() {
     }
 
     if (typeof window.jspdf === 'undefined') {
-        alert("Biblioteca jsPDF não carregada. Verifique a conexão com a internet.");
+        alert("Biblioteca jsPDF não carregada.");
         return;
     }
 
@@ -425,9 +493,9 @@ export function exportarPDFCal() {
         y += 7;
         doc.text(`Concentração Mãe: ${ultimoResultado.conc_mae_gL} g/L`, 25, y);
         y += 7;
-        doc.text(`Diluição: ${ultimoResultado.conc_percent}%`, 25, y);
+        doc.text(`Diluição: ${ultimoResultado.diluicao_percent}%`, 25, y);
         y += 7;
-        doc.text(`Volume do Jarro: ${ultimoResultado.volume_jarro} L`, 25, y);
+        doc.text(`Volume do Jarro: ${ultimoResultado.volume_jarro_L} L`, 25, y);
         y += 10;
 
         // Resultados
@@ -444,14 +512,16 @@ export function exportarPDFCal() {
         y += 8;
         doc.text(`Concentração Diluída: ${ultimoResultado.conc_diluida_mg_mL} mg/mL`, 25, y);
         y += 7;
-        doc.text(`Volume Mãe por L: ${ultimoResultado.vol_mae_L} L`, 25, y);
+        doc.text(`Volume Mãe por L: ${ultimoResultado.vol_mae_por_L_mL} mL/L`, 25, y);
         y += 7;
-        doc.text(`Volume Diluído por L: ${ultimoResultado.vol_diluido_mL_por_L} mL/L`, 25, y);
+        doc.text(`Volume Diluído por L: ${ultimoResultado.vol_diluido_por_L_mL} mL/L`, 25, y);
         y += 10;
 
         doc.text("APLICAÇÃO NO JARRO:", 20, y);
         y += 8;
-        doc.text(`Volume a Aplicar: ${ultimoResultado.volume_jarro_mL} mL`, 25, y);
+        doc.text(`Volume a Aplicar: ${ultimoResultado.vol_jarro_mL} mL`, 25, y);
+        y += 7;
+        doc.text(`Verificação: ${ultimoResultado.cal_no_jarro_mg} mg`, 25, y);
         y += 10;
 
         doc.text("PREPARO DE 1L DE SOLUÇÃO DILUÍDA:", 20, y);
@@ -466,7 +536,7 @@ export function exportarPDFCal() {
         doc.save("cal_hidratada.pdf");
     } catch (error) {
         console.error('Erro ao exportar PDF:', error);
-        alert('Erro ao exportar PDF. Verifique o console para mais detalhes.');
+        alert('Erro ao exportar PDF.');
     }
 }
 
@@ -481,12 +551,11 @@ export function exportarExcelCal() {
     }
 
     if (typeof XLSX === 'undefined') {
-        alert("Biblioteca XLSX não carregada. Verifique a conexão com a internet.");
+        alert("Biblioteca XLSX não carregada.");
         return;
     }
 
     try {
-        // Prepara dados para o Excel
         const dadosExcel = {
             'Alcalinidade (mg/L CaCO₃)': ultimoResultado.alcalinidade,
             'pH Inicial': ultimoResultado.ph_inicial,
@@ -495,12 +564,13 @@ export function exportarExcelCal() {
             'Fator de Correção': ultimoResultado.fator_correcao,
             'Cal Necessária (mg/L)': ultimoResultado.cal_necessaria_mgL,
             'Concentração Mãe (g/L)': ultimoResultado.conc_mae_gL,
-            'Diluição (%)': ultimoResultado.conc_percent,
+            'Diluição (%)': ultimoResultado.diluicao_percent,
             'Concentração Diluída (mg/mL)': ultimoResultado.conc_diluida_mg_mL,
-            'Volume Mãe por L (L)': ultimoResultado.vol_mae_L,
-            'Volume Diluído por L (mL/L)': ultimoResultado.vol_diluido_mL_por_L,
-            'Volume do Jarro (L)': ultimoResultado.volume_jarro,
-            'Volume a Aplicar no Jarro (mL)': ultimoResultado.volume_jarro_mL,
+            'Volume Mãe por L (mL)': ultimoResultado.vol_mae_por_L_mL,
+            'Volume Diluído por L (mL)': ultimoResultado.vol_diluido_por_L_mL,
+            'Volume do Jarro (L)': ultimoResultado.volume_jarro_L,
+            'Volume a Aplicar no Jarro (mL)': ultimoResultado.vol_jarro_mL,
+            'Cal no Jarro (mg)': ultimoResultado.cal_no_jarro_mg,
             'Solução Mãe para 1L (mL)': ultimoResultado.preparo_1L.solucao_mae_mL,
             'Água para 1L (mL)': ultimoResultado.preparo_1L.agua_mL,
             'Data': ultimoResultado.data
@@ -512,7 +582,7 @@ export function exportarExcelCal() {
         XLSX.writeFile(wb, "cal_hidratada.xlsx");
     } catch (error) {
         console.error('Erro ao exportar Excel:', error);
-        alert('Erro ao exportar Excel. Verifique o console para mais detalhes.');
+        alert('Erro ao exportar Excel.');
     }
 }
 
